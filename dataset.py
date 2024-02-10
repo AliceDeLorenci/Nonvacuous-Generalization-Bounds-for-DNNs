@@ -1,16 +1,24 @@
 from torchvision.datasets import MNIST
 from torch.utils.data import Dataset
+import torchvision.transforms as transforms 
 
 
-class BMNIST(Dataset):
+class BMNIST(MNIST):
     '''
     Class for MNIST dataset with binarised labels
     '''
 
-    def __init__()
-    # TODO
+    def __init__(self, root, train, as_image=False, download=True):
 
-    def __getitem(idx)
+        if as_image:
+            transform = transforms.Compose([transforms.PILToTensor()])
+        else:
+            transform = transforms.Compose([
+                transforms.PILToTensor(),
+                transforms.Lambda(lambda x: torch.flatten(x))
+                ])
 
-    
-        return image, target
+        target_transform = lambda x: int(x > 4)
+
+        super(MNIST,self).__init__(self, root, train, transform, target_transform, download)
+
