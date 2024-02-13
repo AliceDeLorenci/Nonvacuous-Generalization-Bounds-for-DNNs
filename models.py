@@ -26,7 +26,6 @@ class MLPModel(nn.Module):
                 , a=-2*sigma_init, b=2*sigma_init)
             nn.init.constant_(layer.bias, 0)
 
-
         nn.init.constant_(self.layers[0].bias, 0.1)
 
     def forward(x):
