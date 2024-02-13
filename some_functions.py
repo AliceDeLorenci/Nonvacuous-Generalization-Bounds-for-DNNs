@@ -52,6 +52,13 @@ def weight_init(size, mu=0, sigma=0.04):
 
     return torch.from_numpy(w) 
 
+def get_all_params(model):
+    # get all parameters of a torch model as a 1D Tensor
 
+    weights = torch.Tensor()
+    for param in model.parameters():
+        weights = torch.cat([weights, param.flatten()])
+
+    return weights
 
 

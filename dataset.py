@@ -18,7 +18,7 @@ class BMNIST(MNIST):
                 transforms.Lambda(lambda x: torch.flatten(x))
                 ])
 
-        target_transform = lambda x: int(x > 4)
+        target_transform = lambda x: 2*int(x > 4)-1
 
         super(MNIST,self).__init__(self, root, train, transform, target_transform, download)
 

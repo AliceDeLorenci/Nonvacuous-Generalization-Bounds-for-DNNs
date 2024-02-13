@@ -24,6 +24,10 @@ class MLPModel(nn.Module):
             nn.init.trunc_normal_(layer.weight
                 , mean=mu_init, std=sigma_init
                 , a=-2*sigma_init, b=2*sigma_init)
+            nn.init.constant_(layer.bias, 0)
+
+
+        nn.init.constant_(self.layers[0].bias, 0.1)
 
     def forward(x):
 
@@ -31,4 +35,3 @@ class MLPModel(nn.Module):
             x = hidden_layer(x).relu()
 
         return x.softmax(dim=1)
-
