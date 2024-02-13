@@ -25,20 +25,41 @@ test_dataset = BMNIST(root=root+'/test/', train=False, download=True)
 
 
 train_loader = DataLoader(train_dataset, batch_size=batch_size)
-test_dataset = DataLoader(test_dataset, batch_size=batch_size)
+test_loader = DataLoader(test_dataset, batch_size=batch_size)
 
 
 
 # first opt loop: classification w logistic loss
 for i in range(nb_epochs):
-
+    model.train()
+    train_loss = 0
     for batch in train_loader:
-
         x, y = batch
 
-        # TODO forward + backward pass
+        predictions = model(x.to(device))
+        current_loss = logistic(predictions, y.to(device))
+
+        optimizer.zero_grad(set_to_none=True)
+        current_loss.backward()
+        optimizer.step()
     
-with torch.no_grad():
+        train_loss += current_loss.item()
+    
+    model.eval()
+    test_loss = 0
+    for batch in test_loader:
+        x, y = batch
+
+        with torch.no_grad():
+            predictions = model(x.to(device))
+            current_loss = logistic(predictions, y.to(device))
+
+        test_loss += current_loss.item()
+
+    print('Epoch ', str(i+1)
+    , ' train loss:' , train_loss / len(train_loader)
+        , 'test loss', test_loss / len(test_loader))
+        
     x , y = batch
 
 w = get_all_params(model) 
