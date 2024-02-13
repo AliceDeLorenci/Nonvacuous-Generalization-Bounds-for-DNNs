@@ -2,28 +2,33 @@ import torch
 from torch import nn 
 
 
+# global variables
+mu_init = 0
+sigma_init = 0.04
+
 class MLPModel(nn.Module):
-    def __init__(nin, nlayers, nhid, nout)
+    def __init__(nin, nlayers, nhid, nout):
 
         super(MLPModel, self).__init__()
+        
+        self.layers = nn.ModuleList()
 
-        self.input_layer = nn.Linear(nin, nhid)
+        self.layers.append(nn.Linear(nin, nhid)) #input layer
 
-        self.hidden_layers = []
+        for i in range(nlayers): #hidden layers
+            self.layers.append(nn.Linear(nhid, nhid))
 
-        for i in range(nlayers):
-            self.hidden_layers += [nn.Linear(nhid, nhid)]
+        self.layers.append(nn.Linear(nhid, nout)) #output layer
 
-        self.hidden_layers = nn.ModuleList(self.hidden_layers)
-
-        self.output_layer = nn.Linear(nhid, nout)
+        for layer in self.layers:
+            nn.init.trunc_normal_(layer.weight
+                , mean=mu_init, std=sigma_init
+                , a=-2*sigma_init, b=2*sigma_init)
 
     def forward(x):
 
-        x = self.input_layer(x).relu()
-
-        for hidden_layer in self.hidden_layers:
+        for layer in self.layers:
             x = hidden_layer(x).relu()
 
-        return self.output_layer(x).relu().softmax(dim=1)
+        return x.softmax(dim=1)
 

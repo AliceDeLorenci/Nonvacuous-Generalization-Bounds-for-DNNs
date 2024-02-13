@@ -3,7 +3,7 @@ Some maybe useful functions, taken from https://github.com/gkdziugaite/pacbayes-
 '''
 
 import numpy as np
-
+import torch
 
 def KLdiv(pbar,p):
     return pbar * np.log(pbar/p) + (1-pbar) * np.log((1-pbar)/(1-p))
@@ -44,4 +44,14 @@ def SamplesConvBound(train_error=0.028,M=1000,delta=0.01,p_init = None, niter = 
         p_next = Newt(p_next,train_error,c)
     print("Chernoff's error", p_next-train_error)
     return p_next-train_error
+
+def weight_init(size, mu=0, sigma=0.04):
+    z = np.random.randn(list(size))
+    w = mu + sigma*z
+    w = np.ma.masked_where((w > 2*sigma) & (x < -2*sigma ), x)
+
+    return torch.from_numpy(w) 
+
+
+
 
