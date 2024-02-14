@@ -10,6 +10,7 @@ import os
 from copy import deepcopy
 from tqdm.notebook import tqdm, trange
 
+from torch.nn.utils import vector_to_parameters, parameters_to_vector
 
 from some_functions import get_all_params, Newt, SamplesConvBound, approximate_BPAC_bound
 from loss import logistic
@@ -37,7 +38,8 @@ optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9) # SGD with the 
 root = './data/MNIST'
 
 model = MLPModel(args.nin, args.n_layers, args.nhid, args.nout)
-w_0 = model.parameters()
+
+w0 = parameters_to_vector(model.parameters())
 
 train_dataset = BMNIST(root+'/train/', train=True, download=True) 
 test_dataset = BMNIST(root+'/test/', train=False, download=True)
@@ -87,7 +89,7 @@ for i in trange(nb_epochs):
     print('Train accuracy', train_acc, 'test accuracy', test_acc)
 
 
-w = model.parameters()
+w = parameters_to_vector(model.parameters())
 
 # second opt loop optimising the PAC-Bayes bound
 
@@ -107,10 +109,10 @@ def bound_objective(w, sigma, rho):
     return loss(w,sigma) + torch.sqrt(0.5 * B_RE(w,sigma,rho, delta))
 
 def loss(w,sigma, model = model_snn):
-    for p, wi, si in zip(model.parameters(), w, sigma):
-        p = wi + torch.exp(2*si) * torch.randn(p.size())
+    
+    vector_to_parameters(w + torch.exp(2*sigma) * torch.randn(w.size()), model.parameters())
    
-    loss = torch.Tensor(0.0).to(device)
+    loss = torch.from_numpy(np.array([0.0])).to(device)
     
     for batch in train_loader:
         x ,y = batch
@@ -122,18 +124,17 @@ def loss(w,sigma, model = model_snn):
 
 def B_RE(w, sigma, rho, delta):
     
-    KL = 1/ torch.exp(2*rho)- d + 1 / torch.exp(2*rho) * torch.norm(w.flatten()-w0) 
+    KL = 1/ torch.exp(2*rho)- d + 1 / torch.exp(2*rho) * torch.norm(w-w0) 
     KL = KL / 2  + d * rho -  torch.sum(sigma)
     
     return 1/(m-1) * (KL + 2 * b * torch.log(c) - rho*b + torch.log( torch.pi**2 * m / 6 / delta))
 
 
 #init parameters to optimise
-w = model_snn.parameters()
 rho = torch.from_numpy(np.array([-3.]))
 sigma = torch.from_numpy(np.log(2 * np.abs(w.numpy())))
 
-w.requires_grad = rho.requires_grad = sigma.requires_grad = Trues
+w.requires_grad = rho.requires_grad = sigma.requires_grad = True
 
 optimizer_2 = optim.RMSprop(w, lr=1e-3)
 
@@ -164,14 +165,8 @@ empirical_snn_train_errors_ = empirical_snn_test_errors_ = []
 
 # sampling SNNs for Monte Carlo estimation 
 for i in trange(nb_snns):
-
-    model_snn = deepcopy(model)
     
-    for p, w_i, sigma_i in zip(model_snn.parameters(), w, sigma):
-        p = w_i + sigma_i * torch.randn(p.size()) 
-
-    
-    xi = torch.randn(w) 
+    vector_to_parameters(w + torch.exp(2*sigma) * torch.rannd(w.size()), model_snn.parameters())
     
     train_accuracy = test_accuracy = 0
     for batch in train_loader:
