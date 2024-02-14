@@ -1,3 +1,4 @@
+import numpy as np
 import torch
 from torch import nn, optim
 from torch.utils.data import DataLoader, random_split
@@ -8,6 +9,7 @@ import time
 import os
 from copy import deepcopy
 from tqdm.notebook import tqdm, trange
+
 
 from some_functions import get_all_params, Newt, SamplesConvBound, approximate_BPAC_bound
 from loss import logistic
