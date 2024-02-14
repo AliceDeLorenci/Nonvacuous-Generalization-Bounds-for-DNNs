@@ -55,6 +55,7 @@ for i in trange(nb_epochs):
     train_acc = 0 
     for batch in train_loader:
         x, y = batch
+        print(x[0,:])
         optimizer.zero_grad()
 
         predictions = model(x.to(device))
