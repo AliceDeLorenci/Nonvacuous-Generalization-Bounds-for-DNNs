@@ -20,7 +20,7 @@ batch_size = 100
 nb_epochs = 20
 
 
-Accuracy = BinaryAccuracy(threshold = 0)
+Accuracy = BinaryAccuracy(threshold = 0.5)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9) # SGD with the paper's default params
@@ -36,6 +36,7 @@ test_dataset = BMNIST(root+'/test/', train=False, download=True)
 train_loader = DataLoader(train_dataset, batch_size=batch_size)
 test_loader = DataLoader(test_dataset, batch_size=batch_size)
 
+print('Starting first training loop...')
 # first opt loop: classification w logistic loss
 for i in trange(nb_epochs):
     model.train()
