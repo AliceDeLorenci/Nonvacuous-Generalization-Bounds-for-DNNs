@@ -88,8 +88,9 @@ w = model.parameters()
 # second opt loop optimising the PAC-Bayes bound
 
 
-nb_snns = 150_000 # number of SNNs to average
-T = 200_000; T_update = 3 * T // 4 - 1 # number of opt iterations
+nb_snns = 100 #nb_snns = 150_000 # number of SNNs to average
+T = 20 #T = 200_000; 
+T_update = 3 * T // 4 - 1 # number of opt iterations
 b = 100
 c = 0.1
 delta = 0.025

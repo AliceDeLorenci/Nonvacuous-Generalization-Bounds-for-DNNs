@@ -31,6 +31,6 @@ class MLPModel(nn.Module):
     def forward(self, x):
 
         for layer in self.layers:
-            x = hidden_layer(x).relu()
+            x = layer(x).relu()
 
         return x.softmax(dim=1)
