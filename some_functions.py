@@ -12,7 +12,6 @@ def KLdiv(pbar,p):
 def KLdiv_prime(pbar,p):
     return (1-pbar)/(1-p) - pbar/p
 
-
 def Newt(p,q,c):
     newp = p - (KLdiv(q,p) - c)/KLdiv_prime(q,p)
     return newp

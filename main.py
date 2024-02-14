@@ -8,7 +8,7 @@ import time
 import os
 from copy import deepcopy
 
-from some_functions import get_all_params, Newt
+from some_functions import get_all_params, Newt, SamplesConvBound, approximate_BPAC_bound
 from loss import logistic
 
 from parsers import get_main_parser
@@ -47,6 +47,7 @@ for i in range(nb_epochs):
         optimizer.step()
     
         train_loss += current_loss.item()
+        # TODO compute train accuracies
     
     model.eval()
     test_loss = 0
@@ -58,12 +59,12 @@ for i in range(nb_epochs):
             current_loss = logistic(predictions, y.to(device))
 
         test_loss += current_loss.item()
+        # TODO compute test accuracies 
 
     print('Epoch ', str(i+1)
     , ' train loss:' , train_loss / len(train_loader)
         , 'test loss', test_loss / len(test_loader))
-        
-    x , y = batch
+
 
 w = model.parameters()
 
@@ -99,7 +100,7 @@ def loss(w,sigma, model = model_snn):
 def B_RE(w, sigma, rho, delta):
     
     KL = 1/ torch.exp(2*rho)- d + 1 / torch.exp(2*rho) * torch.norm(w.flatten()-w0) 
-    KL = KL / 2  + d * rho -  * sigma
+    KL = KL / 2  + d * rho -  torch.sum(sigma)
     
     return 1/(m-1) * (KL + 2 * b * torch.log(c) - rho*b + torch.log( torch.pi**2 * m / 6 / delta))
 
@@ -161,11 +162,17 @@ for i in range(nb_snns):
             test_accuracy += Accuracy(predictions, y.to(device)).item()
         
     empirical_snn_test_errors_ += [test_accuracy / len(test_loader)]
-    
-# TODO 1st bound
 
-bound_1 = KL_inv(np.mean(empirical_snn_train_errors_), np.log(2 / delta_prime) / nb_snns)
+
+
+bound_1 = SamplesConvBound(np.mean(empirical_snn_train_errors_), nb_snns)
 
 # TODO 2nd bound 
 
-bound_2 = KL_inv(bound_1, B_RE(w, sigma, rho, delta)) 
+B = B_RE(w , sigma, rho, delta)
+bound_2 = approximate_BPAC_bound(bound_1, B)
+
+
+print('Train error:', train_acc, 'Test error', test_ac)
+print('SNN train error' np.mean(empirical_snn_train_errors_),  'SNN test error' np.mean(empirical_snn_test_errors_))
+print('PAC-Bayes bound', bound_2)
