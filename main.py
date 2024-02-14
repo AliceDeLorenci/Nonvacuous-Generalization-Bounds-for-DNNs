@@ -98,7 +98,7 @@ c = 0.1
 delta = 0.025
 delta_prime = 0.01
 
-odel_snn = deepcopy(model)
+model_snn = deepcopy(model)
 
 def bound_objective(w, sigma, rho):
     
