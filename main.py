@@ -58,6 +58,7 @@ for i in trange(nb_epochs):
     
         train_loss += current_loss.item()
         train_acc += Accuracy(predictions, y.to(device)).item()
+        print(current_loss.item())
         
     train_acc = train_acc / len(train_loader)
     
