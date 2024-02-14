@@ -190,5 +190,5 @@ bound_2 = approximate_BPAC_bound(bound_1, B)
 
 
 print('Train error:', 1-train_acc, 'Test error', 1-test_ac)
-print('SNN train error', np.mean(empirical_snn_train_errors_,  'SNN test error',  np.mean(empirical_snn_test_errors_))
+print('SNN train error', np.mean(empirical_snn_train_errors_),  'SNN test error',  np.mean(empirical_snn_test_errors_) )
 print('PAC-Bayes bound', bound_2)
