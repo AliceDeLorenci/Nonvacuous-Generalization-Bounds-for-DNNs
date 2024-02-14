@@ -1,6 +1,6 @@
 import torch
 from torch import nn, optim
-from torch.utlis.data import DataLoader, random_split
+from torch.utils.data import DataLoader, random_split
 from dataset import BMNIST
 from torchmetrics.classification import BinaryAccuracy 
 
