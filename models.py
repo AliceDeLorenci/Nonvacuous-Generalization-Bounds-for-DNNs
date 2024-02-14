@@ -33,4 +33,4 @@ class MLPModel(nn.Module):
         for layer in self.layers:
             x = layer(x).relu()
 
-        return x.softmax(dim=1)
+        return 2*x.softmax(dim=0)-1
