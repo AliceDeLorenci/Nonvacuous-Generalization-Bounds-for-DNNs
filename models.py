@@ -28,7 +28,7 @@ class MLPModel(nn.Module):
 
         nn.init.constant_(self.layers[0].bias, 0.1)
 
-    def forward(x):
+    def forward(self, x):
 
         for layer in self.layers:
             x = hidden_layer(x).relu()

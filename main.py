@@ -53,7 +53,7 @@ for i in trange(nb_epochs):
         predictions = model(x.to(device))
         current_loss = logistic(predictions, y.to(device))
 
-        optimizer.zero_grad(set_to_none=True)
+        optimizer.zero_grad()
         current_loss.backward()
         optimizer.step()
     
