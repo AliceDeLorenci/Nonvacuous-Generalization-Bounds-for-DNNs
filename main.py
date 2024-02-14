@@ -23,10 +23,10 @@ optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9) # SGD with the 
 root = './data/MNIST'
 
 model = MLPModel(args.n_layers, args.nin, args.nhid, args.nout)
-w0 = get_all_params(model)
+w_0 = model.parameters()
 
 train_dataset = BMNIST(root+'/train/', train=True, download=True) 
-test_dataset = BMNIST(root=root+'/test/', train=False, download=True)
+test_dataset = BMNIST(root+'/test/', train=False, download=True)
 
 train_loader = DataLoader(train_dataset, batch_size=batch_size)
 test_loader = DataLoader(test_dataset, batch_size=batch_size)
@@ -64,28 +64,73 @@ for i in range(nb_epochs):
         
     x , y = batch
 
-w = get_all_params(model) 
+w = model.parameters()
 
 # second opt loop optimising the PAC-Bayes bound
 
 
 nb_snns = 150_000 # number of SNNs to average
-T = 200_000; T_update = 150_000-1 # number of opt iterations
+T = 200_000; T_update = 3 * T // 4 - 1 # number of opt iterations
 b = 100
 c = 0.1
 delta = 0.025
 
-optimizer_2 = optim.RMSprop(, lr=1e-3#TODO)
+
+def bound_objective(w, sigma, rho):
+    
+    return loss(w,sigma) + torch.sqrt(0.5 * B_RE(w,sigma,rho, delta))
+
+def loss(w,sigma, model = model_snn):
+    for p, wi, si in zip(model.parameters(), w, sigma):
+        p = wi + torch.exp(2*si) * torch.randn(p.size())
+   
+    loss = torch.Tensor(0.0).to(device)
+    
+    for batch in train_loader:
+        x ,y = batch
+        loss += logistic(model(x.to(device)), y.to(device))
+
+    return loss  / len(train_loader)
+
+# ! Note: parametrisastion sigma = 0.5  \log s, \rho = 0.5 \log \lambda
+
+def B_RE(w, sigma, rho, delta):
+    
+    KL = 1/ torch.exp(2*rho)- d + 1 / torch.exp(2*rho) * torch.norm(w.flatten()-w0) 
+    KL = KL / 2  + d * rho -  * sigma
+    
+    return 1/(m-1) * (KL + 2 * b * torch.log(c) - rho*b + torch.log( torch.pi**2 * m / 6 / delta))
+     
+    
 
 for i in range(nb_snns):
     model_snn = deepcopy(model)
-    # TODO init SNN
+    
+    #init parameters to optimise
+    w = model_snn.parameters()
+    rho = -3
+    sigma = torch.log(2 * np.abs(w))
+    
+    w.requires_grad = rho.requires_grad = sigma.requires_grad = Trues
+    
+    optimizer_2 = optim.RMSprop(w, lr=1e-3)
+    
+    optimizer_2.add_param_group(rho)
+    optimizer_2.add_param_group(sigma)
+    
+    
     for t in range(T):
-
-        xi = torch.randn(#TODO size )
-
-
-        if t == T_update:
-            learning_rate = 1e-4
-            # TODO update optimizer_2 lr
         
+       pb_ = bound_objective(w, sigma, rho)
+       
+       optimizer_2.zero_grad()
+       pb_.backward()
+       optimizer_2.step() 
+        
+        if t == T_update:
+            for g in optimizer_2.param_groups:
+                g['lr'] = 1e-4
+                
+
+
+    del model_snn
