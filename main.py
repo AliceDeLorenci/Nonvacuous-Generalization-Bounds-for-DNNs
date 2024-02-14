@@ -23,6 +23,9 @@ nb_epochs = 20
 
 Accuracy = BinaryAccuracy(threshold = 0.5)
 
+map_to_01 = lambda x : (x+1) / 2
+CumstomAcc = lambda x,y  : Accuracy(map_to_01(x), map_to_01(y))
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 model = MLPModel(args.nin, args.n_layers, args.nhid, args.nout)
