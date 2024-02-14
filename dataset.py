@@ -20,5 +20,5 @@ class BMNIST(MNIST):
 
         target_transform = lambda x: 2*int(x > 4)-1
 
-        super(MNIST,self).__init__(self, root, train, transform, target_transform, download)
+        MNIST.__init__(root, train, transform, target_transform, download)
 
