@@ -50,8 +50,7 @@ for i in trange(nb_epochs):
         x, y = batch
         
         predictions = model(x.to(device))
-        print(predictions.size()) 
-        current_loss = logistic(predictions, y.to(device))
+        current_loss = logistic(prediction, y.to(device))
 
         optimizer.zero_grad()
         current_loss.backward()
