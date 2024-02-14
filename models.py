@@ -30,9 +30,12 @@ class MLPModel(nn.Module):
 
     def forward(self, x):
         for i, layer in enumerate(self.layers):
-            x = layer(x).relu()
             if i+1 == len(self.layers):
                 x = layer(x) 
+            else:
+                x = layer(x).relu()
+
                 
+                 
         x = torch.softmax(x, dim = 1)
         return x[:,1] - x[:,0]
