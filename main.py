@@ -11,6 +11,7 @@ from tqdm.notebook import tqdm, trange
 
 from some_functions import get_all_params, Newt, SamplesConvBound, approximate_BPAC_bound
 from loss import logistic
+from models import MLPModel
 
 from parsers import get_main_parser
 
@@ -23,6 +24,9 @@ nb_epochs = 20
 Accuracy = BinaryAccuracy(threshold = 0.5)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+model = MLPModel(args.n_layers, args.nhid, args.nout)
+
 optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9) # SGD with the paper's default params
 
 root = './data/MNIST'
