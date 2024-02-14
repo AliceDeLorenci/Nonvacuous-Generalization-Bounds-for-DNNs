@@ -48,6 +48,10 @@ for i in trange(nb_epochs):
     train_acc = 0 
     for batch in train_loader:
         x, y = batch
+        print(x, y)
+        print(x.size(), y.size(), batch.size())
+        
+        
 
         predictions = model(x.to(device))
         current_loss = logistic(predictions, y.to(device))
