@@ -55,11 +55,11 @@ for i in trange(nb_epochs):
     train_acc = 0 
     for batch in train_loader:
         x, y = batch
-        
+        optimizer.zero_grad()
+
         predictions = model(x.to(device))
         current_loss = logistic(predictions, y.to(device))
 
-        optimizer.zero_grad()
         current_loss.backward()
         optimizer.step()
     
@@ -132,7 +132,7 @@ def B_RE(w, sigma, rho, delta):
 
 #init parameters to optimise
 rho = torch.from_numpy(np.array([-3.]))
-sigma = torch.from_numpy(np.log(2 * np.abs(w.numpy())))
+sigma = torch.from_numpy(np.log(2 * np.abs(w.detach().numpy())))
 
 w.requires_grad = rho.requires_grad = sigma.requires_grad = True
 
