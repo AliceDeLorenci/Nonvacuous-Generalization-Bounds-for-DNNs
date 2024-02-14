@@ -47,9 +47,8 @@ for i in trange(nb_epochs):
     train_loss = 0
     train_acc = 0 
     for batch in train_loader:
-        x, y = batch
-        print(x, y)
-        print(x.size(), y.size(), batch.size())
+        x, y = batchs
+        print(x.size(), y.size())
         
         
 
