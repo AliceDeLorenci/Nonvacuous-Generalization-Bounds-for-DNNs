@@ -18,7 +18,7 @@ from parsers import get_main_parser
 args = get_main_parser()
 
 batch_size = 100
-nb_epochs = 20
+nb_epochs = 1
 
 
 Accuracy = BinaryAccuracy(threshold = 0.5)
@@ -98,6 +98,7 @@ c = 0.1
 delta = 0.025
 delta_prime = 0.01
 
+odel_snn = deepcopy(model)
 
 def bound_objective(w, sigma, rho):
     
@@ -125,12 +126,10 @@ def B_RE(w, sigma, rho, delta):
     return 1/(m-1) * (KL + 2 * b * torch.log(c) - rho*b + torch.log( torch.pi**2 * m / 6 / delta))
 
 
-model_snn = deepcopy(model)
-
 #init parameters to optimise
 w = model_snn.parameters()
-rho = -3
-sigma = torch.log(2 * np.abs(w))
+rho = torch.Tensor([-3], dtype=torch.float32)
+sigma = torch.Tensor([np.log(2 * np.abs(w))])
 
 w.requires_grad = rho.requires_grad = sigma.requires_grad = Trues
 
