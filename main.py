@@ -31,7 +31,7 @@ optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9) # SGD with the 
 
 root = './data/MNIST'
 
-model = MLPModel(args.n_layers, args.nin, args.nhid, args.nout)
+model = MLPModel(args.nin, args.n_layers, args.nhid, args.nout)
 w_0 = model.parameters()
 
 train_dataset = BMNIST(root+'/train/', train=True, download=True) 
