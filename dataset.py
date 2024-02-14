@@ -18,7 +18,6 @@ class BMNIST(MNIST):
                 transforms.PILToTensor(),
                 transforms.ConvertImageDtype(torch.float32),
                 transforms.Lambda(lambda x: torch.flatten(x)),
-                transforms.Lambda(lambda x: x / 255)
                 ])
 
         target_transform = lambda x: 2*int(x > 4)-1
