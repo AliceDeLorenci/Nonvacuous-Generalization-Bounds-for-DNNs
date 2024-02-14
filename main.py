@@ -128,8 +128,8 @@ def B_RE(w, sigma, rho, delta):
 
 #init parameters to optimise
 w = model_snn.parameters()
-rho = torch.Tensor([-3], dtype=torch.float32)
-sigma = torch.Tensor([np.log(2 * np.abs(w))])
+rho = torch.from_numpy(np.array([-3.]))
+sigma = torch.from_numpy(np.log(2 * np.abs(w.numpy())))
 
 w.requires_grad = rho.requires_grad = sigma.requires_grad = Trues
 
@@ -153,7 +153,8 @@ for t in range(T):
 lbda = 0.5 * torch.exp(rho).item()
 j = int(-b * np.log(lbda / c))
 lbda = b * np.exp(- j / c)
-rho = 0.5 * np.torch(lbda)
+rho = 0.5 * np.log(lbda)
+
 
 
 empirical_snn_train_errors_ = empirical_snn_test_errors_ = []
