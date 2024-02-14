@@ -60,7 +60,7 @@ for i in trange(nb_epochs):
         optimizer.step()
     
         train_loss += current_loss.item()
-        train_acc += Accuracy(predictions, y.to(device)).item()
+        train_acc += CumstomAcc(predictions, y.to(device)).item()
         print(current_loss.item())
         
     train_acc = train_acc / len(train_loader)
@@ -76,7 +76,7 @@ for i in trange(nb_epochs):
             current_loss = logistic(predictions, y.to(device))
 
         test_loss += current_loss.item()
-        test_acc += Accuracy(predictions, y.to(device)).item()
+        test_acc += CumstomAcc(predictions, y.to(device)).item()
         
     test_acc = test_acc / len(test_loader)
     
@@ -178,7 +178,7 @@ for i in trange(nb_snns):
        
         with torch.no_grad(): 
             predictions = model_snn(x.to(device))
-            train_accuracy += Accuracy(predictions, y.to(device)).item()
+            train_accuracy += CumstomAcc(predictions, y.to(device)).item()
         
     empirical_snn_train_errors_ += [train_accuracy / len(train_loader)]    
     
@@ -187,7 +187,7 @@ for i in trange(nb_snns):
          
         with torch.no_grad(): 
             predictions = model_snn(x.to(device))
-            test_accuracy += Accuracy(predictions, y.to(device)).item()
+            test_accuracy += CumstomAcc(predictions, y.to(device)).item()
         
     empirical_snn_test_errors_ += [test_accuracy / len(test_loader)]
 
