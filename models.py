@@ -7,7 +7,7 @@ mu_init = 0
 sigma_init = 0.04
 
 class MLPModel(nn.Module):
-    def __init__(nin, nlayers, nhid, nout):
+    def __init__(sefl, nin, nlayers, nhid, nout):
 
         super(MLPModel, self).__init__()
         
