@@ -2,12 +2,13 @@ import torch
 from torch import nn, optim
 from torch.utlis.data import DataLoader, random_split
 from dataset import BMNIST
+from torchmetrics.classification import BinaryAccuracy 
 
 import time 
 import os
 from copy import deepcopy
 
-from some_functions import get_all_params
+from some_functions import get_all_params, Newt
 from loss import logistic
 
 from parsers import get_main_parser
@@ -74,6 +75,7 @@ T = 200_000; T_update = 3 * T // 4 - 1 # number of opt iterations
 b = 100
 c = 0.1
 delta = 0.025
+delta_prime = 0.01
 
 
 def bound_objective(w, sigma, rho):
@@ -100,37 +102,70 @@ def B_RE(w, sigma, rho, delta):
     KL = KL / 2  + d * rho -  * sigma
     
     return 1/(m-1) * (KL + 2 * b * torch.log(c) - rho*b + torch.log( torch.pi**2 * m / 6 / delta))
-     
+
+
+fmodel_snn = deepcopy(model)
+
+#init parameters to optimise
+w = model_snn.parameters()
+rho = -3
+sigma = torch.log(2 * np.abs(w))
+
+w.requires_grad = rho.requires_grad = sigma.requires_grad = Trues
+
+optimizer_2 = optim.RMSprop(w, lr=1e-3)
+
+optimizer_2.add_param_group(rho)
+optimizer_2.add_param_group(sigma)
+
+
+for t in range(T): 
+    pb_ = bound_objective(w, sigma, rho)
     
+    optimizer_2.zero_grad()
+    pb_.backward()
+    optimizer_2.step() 
+    
+    if t == T_update:
+        for g in optimizer_2.param_groups:
+            g['lr'] = 1e-4
+    
+lbda = 0.5 * torch.exp(rho).item()
+j = int(-b * np.log(lbda / c))
+lbda = b * np.exp(- j / c)
+rho = 0.5 * np.torch(lbda)
+
+Accuracy = BinaryAccuracy(threshold = 0)
+
+empirical_snn_train_errors_ = empirical_snn_test_errors_ = []
 
 for i in range(nb_snns):
-    model_snn = deepcopy(model)
+
+    # TODO sample SNN 
     
-    #init parameters to optimise
-    w = model_snn.parameters()
-    rho = -3
-    sigma = torch.log(2 * np.abs(w))
-    
-    w.requires_grad = rho.requires_grad = sigma.requires_grad = Trues
-    
-    optimizer_2 = optim.RMSprop(w, lr=1e-3)
-    
-    optimizer_2.add_param_group(rho)
-    optimizer_2.add_param_group(sigma)
-    
-    
-    for t in range(T):
-        
-       pb_ = bound_objective(w, sigma, rho)
+    train_accuracy = test_accuracy = 0
+    for batch in train_loader:
+        x ,y = batch
        
-       optimizer_2.zero_grad()
-       pb_.backward()
-       optimizer_2.step() 
+        with torch.no_grad(): 
+            predictions = model_snn(x.to(device))
+            train_accuracy += Accuracy(predictions, y.to(device)).item()
         
-        if t == T_update:
-            for g in optimizer_2.param_groups:
-                g['lr'] = 1e-4
-                
+    empirical_snn_train_errors_ += [train_accuracy / len(train_loader)]    
+    
+    for batch in test_loader:
+        x, y = batch
+         
+        with torch.no_grad(): 
+            predictions = model_snn(x.to(device))
+            test_accuracy += Accuracy(predictions, y.to(device)).item()
+        
+    empirical_snn_test_errors_ += [test_accuracy / len(test_loader)]
+    
+# TODO 1st bound
 
+bound_1 = KL_inv(np.mean(empirical_snn_train_errors_), np.log(2 / delta_prime) / nb_snns)
 
-    del model_snn
+# TODO 2nd bound 
+
+bound_2 = KL_inv(bound_1, B_RE(w, sigma, rho, delta)) 
