@@ -25,7 +25,7 @@ Accuracy = BinaryAccuracy(threshold = 0.5)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-model = MLPModel(args.n_layers, args.nhid, args.nout)
+model = MLPModel(args.nin, args.n_layers, args.nhid, args.nout)
 
 optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9) # SGD with the paper's default params
 
