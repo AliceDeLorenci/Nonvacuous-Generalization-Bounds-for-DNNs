@@ -32,5 +32,5 @@ class MLPModel(nn.Module):
 
         for layer in self.layers:
             x = layer(x).relu()
-
-        return 2*x.softmax(dim=0)-1
+            
+        return torch.softmax(x, dim = 1)
