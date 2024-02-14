@@ -22,3 +22,4 @@ class BMNIST(MNIST):
 
         MNIST.__init__(root, train, transform, target_transform, download)
 
+        super(BMNIST, self).__init__(root, train, transform, target_transform, download)
