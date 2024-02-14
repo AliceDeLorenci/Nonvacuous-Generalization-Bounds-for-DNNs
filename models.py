@@ -1,5 +1,6 @@
 import torch
 from torch import nn 
+from torch.nn.functional import relu
 
 
 # global variables
@@ -14,9 +15,10 @@ class MLPModel(nn.Module):
         self.layers = nn.ModuleList()
 
         self.layers.append(nn.Linear(nin, nhid)) #input layer
-
+        self.layers.append(relu)
         for i in range(nlayers): #hidden layers
             self.layers.append(nn.Linear(nhid, nhid))
+            self.layers.append(relu)
 
         self.layers.append(nn.Linear(nhid, nout)) #output layer
 
@@ -31,7 +33,7 @@ class MLPModel(nn.Module):
     def forward(self, x):
 
         for layer in self.layers:
-            x = layer(x).relu()
+            x = layer(x)
         
-        x = torch.softmax(x, dim = 0)
+        x = torch.softmax(x, dim = 1)
         return x[:,1] - x[:,0]
