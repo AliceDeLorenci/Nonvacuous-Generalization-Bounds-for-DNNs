@@ -135,10 +135,12 @@ w.requires_grad = True
 rho.requires_grad = True
 sigma.requires_grad = True
 
-optimizer_2 = optim.RMSprop(w, lr=1e-3)
+PB_params = nn.ParameterList
+PB_params.append(w)
+PB_params.append(rho)
+PB_params.append(sigma)
 
-optimizer_2.add_param_group(rho)
-optimizer_2.add_param_group(sigma)
+optimizer_2 = optim.RMSprop(PB_params, lr=1e-3)
 
 
 for t in range(T): 
