@@ -124,7 +124,7 @@ def B_RE(w, sigma, rho, delta):
     KL = 1/ torch.exp(2*rho)- d + 1 / torch.exp(2*rho) * torch.norm(w-w0) 
     KL = KL / 2  + d * rho -  torch.sum(sigma)
     
-    return 1/(m-1) * (KL + 2 * b * torch.log(c) - rho*b + torch.log( torch.pi**2 * m / 6 / delta))
+    return 1/(m-1) * (KL + 2 * b * np.log(c) - rho*b + np.log( np.pi**2 * m / 6 / delta))
 
 
 #init parameters to optimise
