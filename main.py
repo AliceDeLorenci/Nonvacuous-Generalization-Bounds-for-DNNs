@@ -164,7 +164,7 @@ empirical_snn_train_errors_ = empirical_snn_test_errors_ = []
 # sampling SNNs for Monte Carlo estimation 
 for i in trange(nb_snns):
     
-    vector_to_parameters(w + torch.exp(2*sigma) * torch.rannd(w.size()), model_snn.parameters())
+    vector_to_parameters(w + torch.exp(2*sigma) * torch.randn(w.size()), model_snn.parameters())
     
     train_accuracy = test_accuracy = 0
     for batch in train_loader:
