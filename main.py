@@ -129,7 +129,7 @@ def B_RE(w, sigma, rho, delta):
 
 #init parameters to optimise
 rho = torch.from_numpy(np.array([-3.]))
-sigma = torch.from_numpy(np.log(2 * np.abs(w.detach().numpy())))
+sigma = 0.5*torch.from_numpy(np.log(1e-6 + np.abs(w.detach().numpy())))
 
 w.requires_grad = True
 rho.requires_grad = True
@@ -184,8 +184,6 @@ for i in trange(nb_snns):
             test_accuracy += CumstomAcc(predictions, y.to(device)).item()
         
     empirical_snn_test_errors_ += [test_accuracy / len(test_loader)]
-
-
 
 bound_1 = SamplesConvBound(np.mean(empirical_snn_train_errors_), nb_snns)
 
