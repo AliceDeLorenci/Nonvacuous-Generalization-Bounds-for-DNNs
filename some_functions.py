@@ -17,10 +17,9 @@ def Newt(p,q,c):
     return newp
 
 
-def approximate_BPAC_bound(train_accur, B_init, niter=5):
-    #B_RE = 2* B_init **2
-    A = 1-train_accur
-    B_next = B_init+A
+def approximate_BPAC_bound(A, B_init, niter=5):
+    B_RE = B_init
+    B_next = np.sqrt(B_init / 2 )+A
     if B_next>1.0:
         return 1.0
     for i in range(niter):
