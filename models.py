@@ -36,7 +36,8 @@ class MLPModel(nn.Module):
             else:
                 x = layer(x).relu()
  
-        if self.nout > 1:
-            return torch.softmax(x, dim = 1)
+        x = torch.softmax(x, dim = 1)
+        if self.nout > 2:
+            return x
         else:
-            return torch.tanh(torch.squeeze(x))
+            return x[:,0] - x[:,1]
