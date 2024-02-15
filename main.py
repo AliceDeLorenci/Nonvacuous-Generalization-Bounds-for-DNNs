@@ -86,7 +86,7 @@ for i in trange(nb_epochs):
     print('Train accuracy', train_acc, 'test accuracy', test_acc)
 
 
-w = parameters_to_vector(model.parameters()).detac()
+w = parameters_to_vector(model.parameters()).detach()
 
 # second opt loop optimising the PAC-Bayes bound
 
