@@ -21,7 +21,7 @@ from parsers import get_main_parser
 args = get_main_parser()
 
 batch_size = 100
-nb_epochs = 20
+nb_epochs = 1
 
 
 Accuracy = BinaryAccuracy(threshold = 0.5)
@@ -31,7 +31,7 @@ CumstomAcc = lambda x,y  : Accuracy(map_to_01(x), map_to_01(y))
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-model = MLPModel(args.nin, args.n_layers, args.nhid, args.nout)
+model = MLPModel(args.nin, args.n_layers, args.nhid, args.nout).to(device)
 optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9) # SGD with the paper's default params
 
 root = './data/MNIST'
@@ -131,7 +131,9 @@ def B_RE(w, sigma, rho, delta):
 rho = torch.from_numpy(np.array([-3.]))
 sigma = torch.from_numpy(np.log(2 * np.abs(w.detach().numpy())))
 
-w.requires_grad = rho.requires_grad = sigma.requires_grad = True
+w.requires_grad = True
+rho.requires_grad = True
+sigma.requires_grad = True
 
 optimizer_2 = optim.RMSprop(w, lr=1e-3)
 
