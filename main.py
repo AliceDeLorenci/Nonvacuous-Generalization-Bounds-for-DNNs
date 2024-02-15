@@ -120,7 +120,7 @@ def loss(w,sigma, model = model_snn):
 # ! Note: parametrisastion sigma = 0.5  \log s, \rho = 0.5 \log \lambda
 
 def B_RE(w, sigma, rho, delta):
-    
+    d = len(w)
     KL = 1/ torch.exp(2*rho)- d + 1 / torch.exp(2*rho) * torch.norm(w-w0) 
     KL = KL / 2  + d * rho -  torch.sum(sigma)
     
