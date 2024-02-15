@@ -11,6 +11,7 @@ class MLPModel(nn.Module):
 
         super(MLPModel, self).__init__()
         
+        self.nout = nout
         self.layers = nn.ModuleList()
 
         self.layers.append(nn.Linear(nin, nhid)) #input layer
@@ -35,5 +36,7 @@ class MLPModel(nn.Module):
             else:
                 x = layer(x).relu()
  
-        x = torch.softmax(x, dim = 1)
-        return x[:,1] - x[:,0]
+        if self.nout > 1:
+            return torch.softmax(x, dim = 1)
+        else:
+            return torch.tanh(x)
