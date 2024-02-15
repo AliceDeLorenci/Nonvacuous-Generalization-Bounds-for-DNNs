@@ -30,12 +30,13 @@ class MLPModel(nn.Module):
         nn.init.constant_(self.layers[0].bias, 0.1)
 
     def forward(self, x):
-        for i, layer in enumerate(self.layers[:-2]):
-            x = layer(x) 
-            
-        x = self.layers[-1](x)
-        x = torch.softmax(x, dim = 1)
-        if self.nout > 2:
-            return x
+        for i, layer in enumerate(self.layers):
+            if i+1 == len(self.layers):
+                x = layer(x) 
+            else:
+                x = layer(x).relu()
+ 
+        if self.nout > 1:
+            return torch.softmax(x, dim = 1)
         else:
-            return x[:,0] - x[:,1]
+            return torch.tanh(torch.squeeze(x))
