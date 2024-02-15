@@ -32,12 +32,9 @@ CumstomAcc = lambda x,y  : Accuracy(map_to_01(x), map_to_01(y))
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 model = MLPModel(args.nin, args.n_layers, args.nhid, args.nout)
-
 optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9) # SGD with the paper's default params
 
 root = './data/MNIST'
-
-model = MLPModel(args.nin, args.n_layers, args.nhid, args.nout)
 
 w0 = parameters_to_vector(model.parameters())
 
