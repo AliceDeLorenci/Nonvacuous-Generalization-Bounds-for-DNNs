@@ -157,7 +157,7 @@ for t in range(T):
 lbda = 0.5 * torch.exp(rho).item()
 j = int(-b * np.log(lbda / c))
 lbda = b * np.exp(- j / c)
-rho = 0.5 * np.log(lbda)
+rho = np.array( [0.5 * np.log(lbda)])
 
 empirical_snn_train_errors_ = empirical_snn_test_errors_ = []
 
@@ -189,7 +189,7 @@ for i in trange(nb_snns):
 
 bound_1 = SamplesConvBound(np.mean(empirical_snn_train_errors_), nb_snns)
 
-B = B_RE(w , sigma, rho, delta)
+B = B_RE(w , sigma, torch.from_numpy(rho), delta).item()
 bound_2 = approximate_BPAC_bound(bound_1, B)
 
 
