@@ -86,7 +86,7 @@ for i in trange(nb_epochs):
     print('Train accuracy', train_acc, 'test accuracy', test_acc)
 
 
-w = parameters_to_vector(model.parameters())
+w = parameters_to_vector(model.parameters()).detac()
 
 # second opt loop optimising the PAC-Bayes bound
 
@@ -157,10 +157,7 @@ j = int(-b * np.log(lbda / c))
 lbda = b * np.exp(- j / c)
 rho = 0.5 * np.log(lbda)
 
-
-
 empirical_snn_train_errors_ = empirical_snn_test_errors_ = []
-
 
 # sampling SNNs for Monte Carlo estimation 
 for i in trange(nb_snns):
