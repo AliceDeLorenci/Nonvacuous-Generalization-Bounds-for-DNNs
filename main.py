@@ -135,7 +135,7 @@ w.requires_grad = True
 rho.requires_grad = True
 sigma.requires_grad = True
 
-PB_params = nn.ParameterList
+PB_params = nn.ParameterList()
 PB_params.append(w)
 PB_params.append(rho)
 PB_params.append(sigma)
