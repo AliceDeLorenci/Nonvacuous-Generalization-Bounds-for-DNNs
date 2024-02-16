@@ -174,7 +174,7 @@ for i in trange(nb_snns):
             predictions = model_snn(x.to(device))
             train_accuracy += CumstomAcc(predictions, y.to(device)).item()
         
-    empirical_snn_train_errors_ += [train_accuracy / len(train_loader)]    
+    empirical_snn_train_errors_ += [1- train_accuracy / len(train_loader)]    
     
     for batch in test_loader:
         x, y = batch
@@ -183,7 +183,7 @@ for i in trange(nb_snns):
             predictions = model_snn(x.to(device))
             test_accuracy += CumstomAcc(predictions, y.to(device)).item()
         
-    empirical_snn_test_errors_ += [test_accuracy / len(test_loader)]
+    empirical_snn_test_errors_ += [1 - test_accuracy / len(test_loader)]
 
 bound_1 = SamplesConvBound(np.mean(empirical_snn_train_errors_), nb_snns)
 
@@ -191,6 +191,6 @@ B = B_RE(w , sigma, torch.from_numpy(rho), delta).item()
 bound_2 = approximate_BPAC_bound(bound_1, B)
 
 
-print('Train error:', 1-train_acc, 'Test error', 1-test_ac)
+print('Train error:', 1-train_acc, 'Test error', 1-test_acc)
 print('SNN train error', np.mean(empirical_snn_train_errors_),  'SNN test error',  np.mean(empirical_snn_test_errors_) )
 print('PAC-Bayes bound', bound_2)
