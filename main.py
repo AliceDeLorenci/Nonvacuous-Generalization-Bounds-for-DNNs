@@ -39,7 +39,7 @@ optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9) # SGD with the 
 
 root = './data/MNIST'
 
-w0 = parameters_to_vector(model.parameters())
+w0 = parameters_to_vector(model.parameters()).to(device)
 
 train_dataset = BMNIST(root+'/train/', train=True, download=True) 
 test_dataset = BMNIST(root+'/test/', train=False, download=True)
@@ -110,7 +110,7 @@ def bound_objective(w, sigma, rho):
 
 def loss(w,sigma, model = model_snn):
     
-    vector_to_parameters(w + torch.exp(2*sigma) * torch.randn(w.size()), model.parameters())
+    vector_to_parameters(w + torch.exp(2*sigma) * torch.randn(w.size()).to(device), model.parameters())
    
     loss = torch.from_numpy(np.array([0.0])).to(device)
     
@@ -167,7 +167,7 @@ empirical_snn_train_errors_ = empirical_snn_test_errors_ = []
 # sampling SNNs for Monte Carlo estimation 
 for i in trange(nb_snns):
     
-    vector_to_parameters(w + torch.exp(2*sigma) * torch.randn(w.size()), model_snn.parameters())
+    vector_to_parameters(w + torch.exp(2*sigma) * torch.randn(w.size()).to(device), model_snn.parameters())
     
     train_accuracy = test_accuracy = 0
     for batch in train_loader:
