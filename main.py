@@ -131,15 +131,15 @@ def B_RE(w, sigma, rho, delta):
 
 
 #init parameters to optimise
-rho = torch.from_numpy(np.array([-3.]))
-sigma = 0.5*torch.from_numpy(np.log(1e-6 + np.abs(w.detach().numpy())))
+rho = torch.from_numpy(np.array([-3.])).to(device)
+sigma = 0.5*torch.from_numpy(np.log(1e-6 + np.abs(w.detach().cpu().numpy()))).to(device)
 
 w.requires_grad = True
 rho.requires_grad = True
 sigma.requires_grad = True
 
 PB_params = nn.ParameterList()
-PB_params.append(w)
+PB_params.append(w.to(device))
 PB_params.append(rho)
 PB_params.append(sigma)
 
