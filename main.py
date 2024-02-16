@@ -21,7 +21,7 @@ from parsers import get_main_parser
 args = get_main_parser()
 
 batch_size = 100
-nb_epochs = 1
+nb_epochs = 20
 
 
 Accuracy = BinaryAccuracy(threshold = 0.5)
