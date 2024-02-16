@@ -24,12 +24,15 @@ batch_size = 100
 nb_epochs = 20
 
 
-Accuracy = BinaryAccuracy(threshold = 0.5)
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+Accuracy = BinaryAccuracy(threshold = 0.5).to(device)
 
 map_to_01 = lambda x : (x+1) / 2
 CumstomAcc = lambda x,y  : Accuracy(map_to_01(x), map_to_01(y))
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 model = MLPModel(args.nin, args.n_layers, args.nhid, args.nout).to(device)
 optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9) # SGD with the paper's default params
