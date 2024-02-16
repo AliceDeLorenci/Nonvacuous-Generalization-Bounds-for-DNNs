@@ -91,9 +91,9 @@ w = parameters_to_vector(model.parameters()).detach()
 # second opt loop optimising the PAC-Bayes bound
 
 
-nb_snns = 100 #nb_snns = 150_000 # number of SNNs to average
-T = 20 #T = 200_000; 
-T_update = 3 * T // 4 - 1 # number of opt iterations
+nb_snns = 150_000 #nb_snns = 150_000 # number of SNNs to average
+T = 200_000 #T = 200_000; 
+T_update = 150_000-1 # number of opt iterations
 b = 100
 c = 0.1
 delta = 0.025
@@ -143,7 +143,7 @@ PB_params.append(sigma)
 optimizer_2 = optim.RMSprop(PB_params, lr=1e-3)
 
 
-for t in range(T): 
+for t in trange(T): 
     pb_ = bound_objective(w, sigma, rho)
     
     optimizer_2.zero_grad()
