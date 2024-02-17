@@ -16,7 +16,7 @@ class BMNIST(MNIST):
         else:
             transform = transforms.Compose([
                 transforms.PILToTensor(),
-                transforms.ConvertImageDtype(torch.float16),
+                transforms.ConvertImageDtype(torch.float32),
                 transforms.Lambda(lambda x: torch.flatten(x)),
                 ])
 
