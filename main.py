@@ -20,7 +20,7 @@ from parsers import get_main_parser
 
 args = get_main_parser()
 
-batch_size = 100
+batch_size = 1000
 nb_epochs = 20
 
 
@@ -161,6 +161,7 @@ lbda = 0.5 * torch.exp(rho).item()
 j = int(-b * np.log(lbda / c))
 lbda = b * np.exp(- j / c)
 rho = np.array( [0.5 * np.log(lbda)])
+rho = torch.from_numpy(rho).to(device)
 
 empirical_snn_train_errors_ = empirical_snn_test_errors_ = []
 
@@ -169,7 +170,8 @@ for i in trange(nb_snns):
     
     vector_to_parameters(w + torch.exp(2*sigma) * torch.randn(w.size()).to(device), model_snn.parameters())
     
-    train_accuracy = test_accuracy = 0
+    train_accuracy = 0
+    test_accuracy = 0
     for batch in train_loader:
         x ,y = batch
        
@@ -188,10 +190,10 @@ for i in trange(nb_snns):
         
     empirical_snn_test_errors_ += [1 - test_accuracy / len(test_loader)]
 
-bound_1 = SamplesConvBound(np.mean(empirical_snn_train_errors_), nb_snns)
+bound_1 = SamplesConvBound(np.mean(empirical_snn_train_errors_), len(train_dataset), delta_prime, )
 
-B = B_RE(w , sigma, torch.from_numpy(rho), delta).item()
-bound_2 = approximate_BPAC_bound(bound_1, B)
+B = np.sqrt( 0.5 * B_RE(w , sigma, torch.from_numpy(rho), delta).item())
+bound_2 = approximate_BPAC_bound(1-np.mean(empirical_snn_train_errors_), B)
 
 
 print('Train error:', 1-train_acc, 'Test error', 1-test_acc)
