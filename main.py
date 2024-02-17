@@ -192,7 +192,7 @@ for i in trange(nb_snns):
 
 bound_1 = SamplesConvBound(np.mean(empirical_snn_train_errors_), len(train_dataset), delta_prime, )
 
-B = np.sqrt( 0.5 * B_RE(w , sigma, torch.from_numpy(rho), delta).item())
+B = np.sqrt( 0.5 * B_RE(w , sigma, rho, delta).item())
 bound_2 = approximate_BPAC_bound(1-np.mean(empirical_snn_train_errors_), B)
 
 
