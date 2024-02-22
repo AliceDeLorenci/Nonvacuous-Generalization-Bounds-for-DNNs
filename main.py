@@ -148,6 +148,8 @@ optimizer_2 = optim.RMSprop(PB_params, lr=1e-3)
 time1 = time.time()
 print_every = 50
 
+print('w isan ? ', torch.isnan(w).any(), ' rho isan ? ', torch.isnan(rho).any(), ' sigma isan ? ', torch.isnan(sigma).any())
+
 for t in trange(T): 
     pb_ = bound_objective(w, sigma, rho)
     
