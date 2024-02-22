@@ -153,7 +153,8 @@ print('w isan ? ', torch.isnan(w).any(), ' rho isan ? ', torch.isnan(rho).any(),
 for t in trange(T): 
     pb_ = bound_objective(w, sigma, rho)
     
-    print(pb_.item(), sigma.item(), rho.item()) 
+    print(pb_.item(), rho.item()) 
+    print('w isan ? ', torch.isnan(w).any(), ' rho isan ? ', torch.isnan(rho).any(), ' sigma isan ? ', torch.isnan(sigma).any())
     optimizer_2.zero_grad()
     pb_.backward()
     optimizer_2.step() 
