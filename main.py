@@ -209,6 +209,9 @@ snn_train_error = np.mean(empirical_snn_train_errors_)
 bound_1 = SamplesConvBound(snn_train_error, len(train_dataset), delta_prime, )
 
 B = np.sqrt( 0.5 * B_RE(w , sigma, rho, delta).item())
+
+print(1-bound_1-snn_train_error, B)
+
 bound_2 = approximate_BPAC_bound(1-bound_1-snn_train_error, B)
 
 
