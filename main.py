@@ -57,8 +57,9 @@ for i in trange(nb_epochs):
         x, y = batch
         optimizer.zero_grad()
 
-        predictions = model(x.to(device))
-        current_loss = logistic(predictions, y.to(device))
+        with torch.cuda.amp.autocast():
+            predictions = model(x.to(device))
+            current_loss = logistic(predictions, y.to(device))
 
         current_loss.backward()
         optimizer.step()
@@ -73,10 +74,11 @@ for i in trange(nb_epochs):
     test_acc = 0 
     for batch in test_loader:
         x, y = batch
-
-        with torch.no_grad():
-            predictions = model(x.to(device))
-            current_loss = logistic(predictions, y.to(device))
+        
+        with torch.cuda.amp.autocast():
+            with torch.no_grad():
+                predictions = model(x.to(device))
+                current_loss = logistic(predictions, y.to(device))
 
         test_loss += current_loss.item()
         test_acc += CumstomAcc(predictions, y.to(device)).item()
@@ -150,8 +152,10 @@ print_every = 50
 
 print('w isan ? ', torch.isnan(w).any(), ' rho isan ? ', torch.isnan(rho).any(), ' sigma isan ? ', torch.isnan(sigma).any())
 
-for t in trange(T): 
-    pb_ = bound_objective(w, sigma, rho)
+for t in trange(T):
+    
+    with torch.cuda.amp.autocast():
+        pb_ = bound_objective(w, sigma, rho)
     
     print(pb_.item(), rho.item()) 
     print('w isan ? ', torch.isnan(w).any(), ' rho isan ? ', torch.isnan(rho).any(), ' sigma isan ? ', torch.isnan(sigma).any())
@@ -185,19 +189,21 @@ for i in trange(nb_snns):
     test_accuracy = 0
     for batch in train_loader:
         x ,y = batch
-       
-        with torch.no_grad(): 
-            predictions = model_snn(x.to(device))
-            train_accuracy += CumstomAcc(predictions, y.to(device)).item()
+      
+        with torch.cuda.amp.autocast():
+            with torch.no_grad():
+                predictions = model_snn(x.to(device))
+                train_accuracy += CumstomAcc(predictions, y.to(device)).item()
         
     empirical_snn_train_errors_ += [1- train_accuracy / len(train_loader)]    
     
     for batch in test_loader:
         x, y = batch
-         
-        with torch.no_grad(): 
-            predictions = model_snn(x.to(device))
-            test_accuracy += CumstomAcc(predictions, y.to(device)).item()
+        
+        with torch.cuda.amp.autocast():
+            with torch.no_grad(): 
+                predictions = model_snn(x.to(device))
+                test_accuracy += CumstomAcc(predictions, y.to(device)).item()
         
     empirical_snn_test_errors_ += [1 - test_accuracy / len(test_loader)]
     if i % print_every == 0:
