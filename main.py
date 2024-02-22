@@ -151,6 +151,7 @@ print_every = 50
 for t in trange(T): 
     pb_ = bound_objective(w, sigma, rho)
     
+    print(pb_.item(), sigma.item(), rho.item()) 
     optimizer_2.zero_grad()
     pb_.backward()
     optimizer_2.step() 
