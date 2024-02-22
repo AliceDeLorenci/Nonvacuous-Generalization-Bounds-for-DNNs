@@ -152,8 +152,7 @@ print_every = 50
 
 
 for t in trange(T):
-    with torch.cuda.amp.autocast():
-        pb_ = bound_objective(w, sigma, rho)
+    pb_ = bound_objective(w, sigma, rho)
     
     optimizer_2.zero_grad()
     pb_.backward()
