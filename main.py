@@ -148,6 +148,7 @@ optimizer_2 = optim.ASGD(PB_params, lr=1e-3)
 time1 = time.time()
 print_every = 50
 
+loss = 0
 
 for t in trange(T):
     pb_ = bound_objective(w, sigma, rho)
@@ -156,12 +157,15 @@ for t in trange(T):
     pb_.backward()
     optimizer_2.step() 
     
+    loss += pb_.item()
+    
     if t == T_update:
         for g in optimizer_2.param_groups:
             g['lr'] = 1e-4
     
     if t % print_every == 0:
-        print(t, '/', T, ' loss:' ,pb_.item(), ' ellasped time', time.time() - time1)
+        print(t, '/', T, ' loss:' , loss / print_every, ' ellasped time', time.time() - time1)
+        loss = 0
     
 lbda = 0.5 * torch.exp(rho).item()
 j = int(-b * np.log(lbda / c))
