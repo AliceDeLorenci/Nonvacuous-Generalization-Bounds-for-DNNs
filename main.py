@@ -163,8 +163,8 @@ for t in trange(T):
         for g in optimizer_2.param_groups:
             g['lr'] = 1e-4
     
-    if t % print_every == 0:
-        print(t, '/', T, ' loss:' , loss / print_every, ' ellasped time', time.time() - time1)
+    if t-1 % print_every == 0:
+        print(t, '/', T, ' loss:' , loss_ / print_every, ' ellasped time', time.time() - time1)
         loss_ = 0
     
 lbda = 0.5 * torch.exp(rho).item()
