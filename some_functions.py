@@ -56,21 +56,3 @@ def SamplesConvBound(train_error=0.028,M=1000,delta=0.01,p_init = None, niter = 
         p_next = Newt(p_next,train_error,c)
     print("Chernoff's error", p_next-train_error)
     return p_next-train_error
-
-def weight_init(size, mu=0, sigma=0.04):
-    z = np.random.randn(list(size))
-    w = mu + sigma*z
-    w = np.ma.masked_where((w > 2*sigma) & (x < -2*sigma ), x)
-
-    return torch.from_numpy(w) 
-
-def get_all_params(model):
-    # get all parameters of a torch model as a 1D Tensor
-
-    weights = torch.Tensor()
-    for param in model.parameters():
-        weights = torch.cat([weights, param.flatten()])
-
-    return weights
-
-

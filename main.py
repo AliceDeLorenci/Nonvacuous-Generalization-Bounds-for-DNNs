@@ -12,7 +12,7 @@ from tqdm.notebook import tqdm, trange
 
 from torch.nn.utils import vector_to_parameters, parameters_to_vector
 
-from some_functions import get_all_params, Newt, SamplesConvBound, approximate_BPAC_bound
+from some_functions import Newt, SamplesConvBound, approximate_BPAC_bound
 from loss import logistic
 from models import MLPModel
 
@@ -94,8 +94,8 @@ w = parameters_to_vector(model.parameters()).detach()
 # second opt loop optimising the PAC-Bayes bound
 
 
-nb_snns = 150 #nb_snns = 150_000 # number of SNNs to average
-T = 200 #T = 200_000; 
+nb_snns = 1500 #nb_snns = 150_000 # number of SNNs to average
+T = 2000 #T = 200_000; 
 T_update = 150_000-1 # number of opt iterations
 b = 100
 c = 0.1
@@ -193,7 +193,7 @@ for i in trange(nb_snns):
 bound_1 = SamplesConvBound(np.mean(empirical_snn_train_errors_), len(train_dataset), delta_prime, )
 
 B = np.sqrt( 0.5 * B_RE(w , sigma, rho, delta).item())
-bound_2 = approximate_BPAC_bound(1-np.mean(empirical_snn_train_errors_), B)
+bound_2 = approximate_BPAC_bound(1-bound_1, B)
 
 
 print('Train error:', 1-train_acc, 'Test error', 1-test_acc)
