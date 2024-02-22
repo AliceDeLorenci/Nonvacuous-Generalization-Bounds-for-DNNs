@@ -120,7 +120,6 @@ def loss(w,sigma, model = model_snn):
         x ,y = batch
         loss += logistic(model(x.to(device)), y.to(device))
 
-    print(loss / len(train_loader))
     return loss  / len(train_loader)
 
 # ! Note: parametrisastion sigma = 0.5  \log s, \rho = 0.5 \log \lambda
@@ -131,7 +130,6 @@ def B_RE(w, sigma, rho, delta):
     KL = KL / 2  + d * rho -  torch.sum(sigma)
     B_RE =1/(m-1) * (KL + 2 * b * np.log(c) - rho*b + np.log( np.pi**2 * m / 6 / delta))
 
-    print(B_RE)
     return B_RE
 
 #init parameters to optimise
