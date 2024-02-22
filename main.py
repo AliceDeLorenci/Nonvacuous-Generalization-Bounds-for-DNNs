@@ -149,7 +149,7 @@ time1 = time.time()
 print_every = 50
 
 loss_ = 0
-
+count_iter = 0 
 for t in trange(T):
     pb_ = bound_objective(w, sigma, rho)
     
@@ -163,8 +163,9 @@ for t in trange(T):
         for g in optimizer_2.param_groups:
             g['lr'] = 1e-4
     
-    if t-1 % print_every == 0:
-        print(t, '/', T, ' loss:' , loss_ / print_every, ' ellasped time', time.time() - time1)
+    count_iter+= 1
+    if count_iter % print_every == 0:
+        print(t+1, '/', T, ' loss:' , loss_ / print_every, ' ellasped time', time.time() - time1)
         loss_ = 0
     
 lbda = 0.5 * torch.exp(rho).item()
