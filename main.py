@@ -96,8 +96,8 @@ w = parameters_to_vector(model.parameters()).detach()
 # second opt loop optimising the PAC-Bayes bound
 
 
-nb_snns = 150 #nb_snns = 150_000 # number of SNNs to average
-T = 200 #T = 200_000; 
+nb_snns = 3000 #nb_snns = 150_000 # number of SNNs to average
+T = 4000 #T = 200_000; 
 T_update = 150_000-1 # number of opt iterations
 b = 100
 c = 0.1
@@ -152,7 +152,6 @@ print_every = 50
 
 
 for t in trange(T):
-    
     with torch.cuda.amp.autocast():
         pb_ = bound_objective(w, sigma, rho)
     
@@ -166,7 +165,7 @@ for t in trange(T):
             g['lr'] = 1e-4
     
     if t % print_every == 0:
-        print(t, ' loss:' ,pb_.item(), ' ellasped time', time.time() - time1)
+        print(t, '/', T, ' loss:' ,pb_.item(), ' ellasped time', time.time() - time1)
     
 lbda = 0.5 * torch.exp(rho).item()
 j = int(-b * np.log(lbda / c))
@@ -205,7 +204,7 @@ for i in trange(nb_snns):
         
     empirical_snn_test_errors_ += [1 - test_accuracy / len(test_loader)]
     if i % print_every == 0:
-        print(i, 'Train error:', np.mean(empirical_snn_train_errors_), 'Test error', np.mean(empirical_snn_test_errors_))
+        print(i , '/ ', nb_snns, 'Train error:', np.mean(empirical_snn_train_errors_), 'Test error', np.mean(empirical_snn_test_errors_))
     
 
 bound_1 = SamplesConvBound(np.mean(empirical_snn_train_errors_), len(train_dataset), delta_prime, )
