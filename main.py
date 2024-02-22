@@ -94,8 +94,8 @@ w = parameters_to_vector(model.parameters()).detach()
 # second opt loop optimising the PAC-Bayes bound
 
 
-nb_snns = 3000 #nb_snns = 150_000 # number of SNNs to average
-T = 4000 #T = 200_000; 
+nb_snns =  262 #nb_snns = 150_000 # number of SNNs to average
+T = 350 #T = 200_000; 
 T_update = 150_000-1 # number of opt iterations
 b = 100
 c = 0.1
@@ -200,13 +200,13 @@ for i in trange(nb_snns):
     if i % print_every == 0:
         print(i , '/ ', nb_snns, 'Train error:', np.mean(empirical_snn_train_errors_), 'Test error', np.mean(empirical_snn_test_errors_))
     
-
-bound_1 = SamplesConvBound(np.mean(empirical_snn_train_errors_), len(train_dataset), delta_prime, )
+snn_train_error = np.mean(empirical_snn_train_errors_)
+bound_1 = SamplesConvBound(snn_train_error, len(train_dataset), delta_prime, )
 
 B = np.sqrt( 0.5 * B_RE(w , sigma, rho, delta).item())
-bound_2 = approximate_BPAC_bound(1-bound_1, B)
+bound_2 = approximate_BPAC_bound(1-bound_1-snn_train_error, B)
 
 
 print('Train error:', 1-train_acc, 'Test error', 1-test_acc)
-print('SNN train error', np.mean(empirical_snn_train_errors_),  'SNN test error',  np.mean(empirical_snn_test_errors_) )
+print('SNN train error', snn_train_error,  'SNN test error',  np.mean(empirical_snn_test_errors_) )
 print('PAC-Bayes bound', bound_2)
