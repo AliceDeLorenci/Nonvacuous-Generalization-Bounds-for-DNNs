@@ -145,6 +145,8 @@ PB_params.append(sigma)
 
 optimizer_2 = optim.RMSprop(PB_params, lr=1e-3)
 
+time1 = time.time()
+print_every = 50
 
 for t in trange(T): 
     pb_ = bound_objective(w, sigma, rho)
@@ -157,6 +159,9 @@ for t in trange(T):
         for g in optimizer_2.param_groups:
             g['lr'] = 1e-4
     
+    if t % print_every == 0:
+        print(t, ' loss:' ,pb_.item(), ' ellasped time', time.time() - time1)
+    
 lbda = 0.5 * torch.exp(rho).item()
 j = int(-b * np.log(lbda / c))
 lbda = b * np.exp(- j / c)
@@ -165,6 +170,8 @@ rho = torch.from_numpy(rho).to(device)
 
 empirical_snn_train_errors_ = empirical_snn_test_errors_ = []
 
+print('Monte-Carlo Estimation of SNNs accuracies') 
+print_every = 25
 # sampling SNNs for Monte Carlo estimation 
 for i in trange(nb_snns):
     
@@ -189,6 +196,9 @@ for i in trange(nb_snns):
             test_accuracy += CumstomAcc(predictions, y.to(device)).item()
         
     empirical_snn_test_errors_ += [1 - test_accuracy / len(test_loader)]
+    if i % print_every == 0:
+        print(i, 'Train error:', np.mean(empirical_snn_train_errors_), 'Test error', np.mean(empirical_snn_test_errors_))
+    
 
 bound_1 = SamplesConvBound(np.mean(empirical_snn_train_errors_), len(train_dataset), delta_prime, )
 
