@@ -120,6 +120,7 @@ def loss(w,sigma, model = model_snn):
         x ,y = batch
         loss += logistic(model(x.to(device)), y.to(device))
 
+    print(loss / len(train_loader))
     return loss  / len(train_loader)
 
 # ! Note: parametrisastion sigma = 0.5  \log s, \rho = 0.5 \log \lambda
@@ -128,9 +129,10 @@ def B_RE(w, sigma, rho, delta):
     d = len(w)
     KL = 1/ torch.exp(2*rho)- d + 1 / torch.exp(2*rho) * torch.norm(w-w0) 
     KL = KL / 2  + d * rho -  torch.sum(sigma)
-    
-    return 1/(m-1) * (KL + 2 * b * np.log(c) - rho*b + np.log( np.pi**2 * m / 6 / delta))
+    B_RE =1/(m-1) * (KL + 2 * b * np.log(c) - rho*b + np.log( np.pi**2 * m / 6 / delta))
 
+    print(B_RE)
+    return B_RE
 
 #init parameters to optimise
 rho = torch.from_numpy(np.array([-3.])).to(device)
@@ -150,7 +152,6 @@ optimizer_2 = optim.RMSprop(PB_params, lr=1e-3)
 time1 = time.time()
 print_every = 50
 
-print('w isan ? ', torch.isnan(w).any(), ' rho isan ? ', torch.isnan(rho).any(), ' sigma isan ? ', torch.isnan(sigma).any())
 
 for t in trange(T):
     
@@ -158,7 +159,6 @@ for t in trange(T):
         pb_ = bound_objective(w, sigma, rho)
     
     print(pb_.item(), rho.item()) 
-    print('w isan ? ', torch.isnan(w).any(), ' rho isan ? ', torch.isnan(rho).any(), ' sigma isan ? ', torch.isnan(sigma).any())
     optimizer_2.zero_grad()
     pb_.backward()
     optimizer_2.step() 
