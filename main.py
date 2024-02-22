@@ -155,7 +155,6 @@ for t in trange(T):
     with torch.cuda.amp.autocast():
         pb_ = bound_objective(w, sigma, rho)
     
-    print(pb_.item(), rho.item()) 
     optimizer_2.zero_grad()
     pb_.backward()
     optimizer_2.step() 
