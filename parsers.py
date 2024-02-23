@@ -9,4 +9,6 @@ def get_main_parser():
     parser.add_argument('--nin', type=int, default=784, help='Number of input dim')
     parser.add_argument('--nout', type=int, default=1, help='Number of outputs')
     
+    parser.add_argument('--lr2', type=float, default=0.001, help='Learning rate 2')
+    
     return parser.parse_args() 

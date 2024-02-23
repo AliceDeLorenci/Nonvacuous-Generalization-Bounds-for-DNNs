@@ -147,7 +147,7 @@ PB_params.append(w.to(device))
 PB_params.append(rho)
 PB_params.append(sigma)
 
-optimizer_2 = optim.RMSprop(PB_params, lr=1e-2)
+optimizer_2 = optim.RMSprop(PB_params, lr=args.lr2)
 #optimizer_2 = optim.ASGD(PB_params, lr=1e-3)
 time1 = time.time()
 print_every = 50
