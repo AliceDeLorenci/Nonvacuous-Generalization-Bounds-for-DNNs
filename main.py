@@ -208,6 +208,7 @@ for i in trange(nb_snns):
 snn_train_error = np.mean(empirical_snn_train_errors_)
 bound_1 = SamplesConvBound(snn_train_error, len(train_dataset), delta_prime, )
 
+print(torch.isnan(w).any(), torch.isnan(sigma).any(), torch.isnan(rho).any())
 squared_B = 0.5 * B_RE(w , sigma, rho, delta).item()
 B = np.sqrt( squared_B )
 print(squared_B, B)
