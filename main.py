@@ -129,9 +129,10 @@ def B_RE(w, sigma, rho, delta, verbose=False):
         print(torch.sum(sigma).isnan().any())
     KL = KL / 2  + d * rho -  torch.sum(sigma) 
     if verbose:
-        print(KL.isnan().any())
+        print(rho.isnan().any())
     B_RE =1/(m-1) * (KL + 2 * torch.log(b*np.log(c) - 2*rho*b )  + np.log( np.pi**2 * m / 6 / delta))
-
+    if verbose:
+        print(torch.log(b*np.log(c) - 2*rho*b ).isnan().any())
     return B_RE
 
 #init parameters to optimise
