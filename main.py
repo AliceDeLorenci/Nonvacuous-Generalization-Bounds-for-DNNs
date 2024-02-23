@@ -121,18 +121,16 @@ def loss(w,sigma, model = model_snn):
     return loss  / len(train_loader)
 
 # ! Note: parametrisastion sigma = 0.5  \log s, \rho = 0.5 \log \lambda
-d = len(w); m = len(train_dataset)
+d = float(len(w)); m = float(len(train_dataset))
 def B_RE(w, sigma, rho, delta, verbose=False):
-    d = len(w)
     KL = 1/ torch.exp(2*rho) *torch.sum(torch.exp(2*sigma)) - d + 1 / torch.exp(2*rho) * torch.norm(w-w0) 
     if verbose:
-        print(torch.sum(sigma).isnan().any())
+        print('sum sigma nan? ' , torch.sum(sigma).isnan().any())
     KL = KL / 2  + d * rho -  torch.sum(sigma) 
     if verbose:
-        print(rho.isnan().any())
+        print('rho nan ?', rho.isnan().any())
+        print('KL is nan ? ', KL.isnan().any())
     B_RE =1/(m-1) * (KL + 2 * torch.log(b*np.log(c) - 2*rho*b )  + np.log( np.pi**2 * m / 6 / delta))
-    if verbose:
-        print(torch.log(b*np.log(c) - 2*rho*b ).isnan().any())
     return B_RE
 
 #init parameters to optimise
