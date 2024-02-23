@@ -123,14 +123,20 @@ def loss(w,sigma, model = model_snn):
 # ! Note: parametrisastion sigma = 0.5  \log s, \rho = 0.5 \log \lambda
 d = float(len(w)); m = float(len(train_dataset))
 def B_RE(w, sigma, rho, delta, verbose=False):
+    if verbose:
+        print('Computing BR_E...')
     KL = 1/ torch.exp(2*rho) *torch.sum(torch.exp(2*sigma)) - d + 1 / torch.exp(2*rho) * torch.norm(w-w0) 
     if verbose:
         print('KL is nan ?', KL.isnan())
-        print('sum sigma nan? ' , torch.sum(sigma).isnan().any())
-    KL = KL / 2  + d * rho -  torch.sum(sigma) 
+    KL = KL / 2.0
     if verbose:
-        print('rho nan ?', rho.isnan().any())
-        print('KL is nan ? ', KL.isnan().any())
+        print('div 2 KL is nan ? ', KL.isnan())
+    KL = KL + d* rho 
+    if verbose:
+        print('+ d * rho KL isnan ?', KL.isnan())
+    KL = KL -  torch.sum(sigma) 
+    if verbose:
+        print('- sum sigma KL is nan ? ', KL.isnan())
     B_RE =1/(m-1) * (KL + 2 * torch.log(b*np.log(c) - 2*rho*b )  + np.log( np.pi**2 * m / 6 / delta))
     return B_RE
 
