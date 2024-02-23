@@ -94,7 +94,7 @@ w = parameters_to_vector(model.parameters()).detach()
 # second opt loop optimising the PAC-Bayes bound
 
 
-nb_snns =  262 #nb_snns = 150_000 # number of SNNs to average
+nb_snns =  200 #nb_snns = 150_000 # number of SNNs to average
 T = 350 #T = 200_000; 
 T_update = 150_000-1 # number of opt iterations
 b = 100
@@ -126,7 +126,7 @@ def B_RE(w, sigma, rho, delta, verbose=False):
     d = len(w)
     KL = 1/ torch.exp(2*rho) *torch.sum(torch.exp(2*sigma)) - d + 1 / torch.exp(2*rho) * torch.norm(w-w0) 
     if verbose:
-        print(KL.isnan().any())
+        print(torch.sum(sigma).isnan().any())
     KL = KL / 2  + d * rho -  torch.sum(sigma) / 2
     if verbose:
         print(KL.isnan().any())
