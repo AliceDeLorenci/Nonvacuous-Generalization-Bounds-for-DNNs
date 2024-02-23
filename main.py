@@ -122,11 +122,15 @@ def loss(w,sigma, model = model_snn):
 
 # ! Note: parametrisastion sigma = 0.5  \log s, \rho = 0.5 \log \lambda
 d = len(w); m = len(train_dataset)
-def B_RE(w, sigma, rho, delta):
+def B_RE(w, sigma, rho, delta, verbose=False):
     d = len(w)
     KL = 1/ torch.exp(2*rho) *torch.sum(torch.exp(2*sigma)) - d + 1 / torch.exp(2*rho) * torch.norm(w-w0) 
-    KL = KL / 2  + d * rho -  torch.sum(sigma)
-    B_RE =1/(m-1) * (KL + 2 * b * np.log(c) - rho*b + np.log( np.pi**2 * m / 6 / delta))
+    if verbose:
+        print(KL.isnan().any())
+    KL = KL / 2  + d * rho -  torch.sum(sigma) / 2
+    if verbose:
+        print(KL.isnan().any())
+    B_RE =1/(m-1) * (KL + 2 * torch.log(b*np.log(c) - 2*rho*b )  + np.log( np.pi**2 * m / 6 / delta))
 
     return B_RE
 
