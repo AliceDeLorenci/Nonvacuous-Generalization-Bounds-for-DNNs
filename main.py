@@ -125,6 +125,7 @@ d = float(len(w)); m = float(len(train_dataset))
 def B_RE(w, sigma, rho, delta, verbose=False):
     KL = 1/ torch.exp(2*rho) *torch.sum(torch.exp(2*sigma)) - d + 1 / torch.exp(2*rho) * torch.norm(w-w0) 
     if verbose:
+        print('KL is nan ?', KL.isnan())
         print('sum sigma nan? ' , torch.sum(sigma).isnan().any())
     KL = KL / 2  + d * rho -  torch.sum(sigma) 
     if verbose:
@@ -212,7 +213,9 @@ snn_train_error = np.mean(empirical_snn_train_errors_)
 bound_1 = SamplesConvBound(snn_train_error, len(train_dataset), delta_prime, )
 
 print(torch.isnan(w).any(), torch.isnan(sigma).any(), torch.isnan(rho).any())
+
 squared_B = 0.5 * B_RE(w , sigma, rho, delta, verbose=True).item()
+
 B = np.sqrt( squared_B )
 print(squared_B, B)
 
