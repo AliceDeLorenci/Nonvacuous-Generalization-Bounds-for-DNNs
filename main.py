@@ -130,10 +130,11 @@ def B_RE(w, sigma, rho, delta, verbose=False):
         print('KL is nan ?', KL.isnan())
     KL = KL / 2.0
     if verbose:
-        print('div 2 KL is nan ? ', KL.isnan())
+        print('div 2 KL is nan ? ', KL.isnan(), KL)
     KL = KL + d* rho 
     if verbose:
         print('+ d * rho KL isnan ?', KL.isnan())
+        print('d* rho', d* rho)
     KL = KL -  torch.sum(sigma) 
     if verbose:
         print('- sum sigma KL is nan ? ', KL.isnan())
