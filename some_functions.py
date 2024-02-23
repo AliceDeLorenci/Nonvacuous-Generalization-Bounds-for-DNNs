@@ -34,10 +34,12 @@ def approximate_BPAC_bound(train_accur, B_init, niter=5):
     B_RE = 2* B_init **2
     A = 1-train_accur
     B_next = B_init+A
+    print(B_next)
     if B_next>1.0:
         return 1.0
     for i in range(niter):
         B_next = Newt(B_next,A,B_RE)
+        print(B_next)
     return B_next
 
 
