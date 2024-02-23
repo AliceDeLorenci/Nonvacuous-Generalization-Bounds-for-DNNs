@@ -210,8 +210,7 @@ bound_1 = SamplesConvBound(snn_train_error, len(train_dataset), delta_prime, )
 
 squared_B = 0.5 * B_RE(w , sigma, rho, delta).item()
 B = np.sqrt( squared_B )
-
-print(1-bound_1-snn_train_error, B)
+print(squared_B, B)
 
 bound_2 = approximate_BPAC_bound(1-bound_1-snn_train_error, B)
 
