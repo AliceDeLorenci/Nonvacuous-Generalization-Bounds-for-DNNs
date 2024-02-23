@@ -127,7 +127,7 @@ def B_RE(w, sigma, rho, delta, verbose=False):
         print('Computing BR_E...')
     KL = 1/ torch.exp(2*rho) *torch.sum(torch.exp(2*sigma)) - d + 1 / torch.exp(2*rho) * torch.norm(w-w0) 
     if verbose:
-        print('KL is nan ?', KL.isnan())
+        print('KL is nan ?', KL.isnan(), KL)
     KL = KL / 2.0
     if verbose:
         print('div 2 KL is nan ? ', KL.isnan(), KL)
@@ -219,7 +219,8 @@ for i in trange(nb_snns):
 snn_train_error = np.mean(empirical_snn_train_errors_)
 bound_1 = SamplesConvBound(snn_train_error, len(train_dataset), delta_prime, )
 
-print(torch.isnan(w).any(), torch.isnan(sigma).any(), torch.isnan(rho).any())
+print('is nan ? ', torch.isnan(w).any(), torch.isnan(sigma).any(), torch.isnan(rho).any())
+print('is inf ? ', torch.isinf(w).any(), torch.isinf(sigma).any(), torch.isinf(rho).any())
 
 squared_B = 0.5 * B_RE(w , sigma, rho, delta, verbose=True).item()
 
