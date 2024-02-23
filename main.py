@@ -143,8 +143,8 @@ PB_params.append(w.to(device))
 PB_params.append(rho)
 PB_params.append(sigma)
 
-#optimizer_2 = optim.RMSprop(PB_params, lr=1e-3)
-optimizer_2 = optim.ASGD(PB_params, lr=1e-3)
+optimizer_2 = optim.RMSprop(PB_params, lr=1e-2)
+#optimizer_2 = optim.ASGD(PB_params, lr=1e-3)
 time1 = time.time()
 print_every = 50
 
@@ -208,7 +208,8 @@ for i in trange(nb_snns):
 snn_train_error = np.mean(empirical_snn_train_errors_)
 bound_1 = SamplesConvBound(snn_train_error, len(train_dataset), delta_prime, )
 
-B = np.sqrt( 0.5 * B_RE(w , sigma, rho, delta).item())
+squared_B = 0.5 * B_RE(w , sigma, rho, delta).item()
+B = np.sqrt( squared_B )
 
 print(1-bound_1-snn_train_error, B)
 
