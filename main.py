@@ -154,10 +154,13 @@ PB_params.append(w.to(device))
 PB_params.append(rho)
 PB_params.append(sigma)
 
+w_old, sigma_old = w.detach().clone(), sigma.detach().clone()
+
 optimizer_2 = optim.RMSprop(PB_params, lr=args.lr2)
 #optimizer_2 = optim.ASGD(PB_params, lr=1e-3)
 time1 = time.time()
 print_every = 50
+
 
 loss_ = 0
 count_iter = 0 
@@ -179,6 +182,7 @@ for t in trange(T):
         print(t+1, '/', T, ' loss:' , loss_ / print_every, ' ellasped time', time.time() - time1)
         loss_ = 0
 
+rho_old = rho.detach().clone()
 
 lbda = torch.exp(2*rho).item()
 j = int(b * np.log(c / lbda))
@@ -187,6 +191,8 @@ rho = np.array( [0.5 * np.log(lbda)])
 rho = torch.from_numpy(rho).to(device)
 
 empirical_snn_train_errors_ = empirical_snn_test_errors_ = []
+
+print('Differences between start and end of second loop, w, sigma, rho', torch.norm(w-w_old), torch.norm(sigma-sigma_old), torch.norm(rho-rho_old))
 
 print('Monte-Carlo Estimation of SNNs accuracies') 
 print_every = 25
