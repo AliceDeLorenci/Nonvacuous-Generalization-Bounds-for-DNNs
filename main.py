@@ -178,12 +178,18 @@ for t in trange(T):
     if count_iter % print_every == 0:
         print(t+1, '/', T, ' loss:' , loss_ / print_every, ' ellasped time', time.time() - time1)
         loss_ = 0
-    
+
+print('Debug rho...')
 lbda = 0.5 * torch.exp(rho).item()
+print('lambda', lbda)
 j = int(-b * np.log(lbda / c))
+print('j', j)
 lbda = b * np.exp(- j / c)
+print('lambda', lbda)
 rho = np.array( [0.5 * np.log(lbda)])
+print('rho', rho)
 rho = torch.from_numpy(rho).to(device)
+print('rho', rho)
 
 empirical_snn_train_errors_ = empirical_snn_test_errors_ = []
 
