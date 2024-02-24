@@ -1,4 +1,5 @@
 import numpy as np
+from math import ceil, floor
 import torch
 from torch import nn, optim
 from torch.utils.data import DataLoader, random_split
@@ -122,22 +123,11 @@ def loss(w,sigma, model = model_snn):
 
 # ! Note: parametrisastion sigma = 0.5  \log s, \rho = 0.5 \log \lambda
 d = float(len(w)); m = float(len(train_dataset))
-def B_RE(w, sigma, rho, delta, verbose=False):
-    if verbose:
-        print('Computing BR_E...')
+def B_RE(w, sigma, rho, delta):
     KL = 1/ torch.exp(2*rho) *torch.sum(torch.exp(2*sigma)) - d + 1 / torch.exp(2*rho) * torch.norm(w-w0) 
-    if verbose:
-        print('KL is nan ?', KL.isnan(), KL)
     KL = KL / 2.0
-    if verbose:
-        print('div 2 KL is nan ? ', KL.isnan(), KL)
     KL = KL + d* rho 
-    if verbose:
-        print('+ d * rho KL isnan ?', KL.isnan())
-        print('d* rho', d* rho)
     KL = KL -  torch.sum(sigma) 
-    if verbose:
-        print('- sum sigma KL is nan ? ', KL.isnan())
     B_RE =1/(m-1) * (KL + 2 * torch.log(b*np.log(c) - 2*rho*b )  + np.log( np.pi**2 * m / 6 / delta))
     return B_RE
 
@@ -169,6 +159,9 @@ for t in trange(T):
     
     optimizer_2.zero_grad()
     pb_.backward()
+    
+    print('w grad:' , w.grad, 'sigma grad:' , sigma.grad, 'rho grad:' , rho.grad)
+    break
     optimizer_2.step() 
     
     loss_ += pb_.item()
@@ -226,13 +219,9 @@ for i in trange(nb_snns):
 snn_train_error = np.mean(empirical_snn_train_errors_)
 bound_1 = SamplesConvBound(snn_train_error, len(train_dataset), delta_prime, )
 
-print('is nan ? ', torch.isnan(w).any(), torch.isnan(sigma).any(), torch.isnan(rho).any())
-print('is inf ? ', torch.isinf(w).any(), torch.isinf(sigma).any(), torch.isinf(rho).any())
-
-squared_B = 0.5 * B_RE(w , sigma, rho, delta, verbose=True).item()
-
+squared_B = 0.5 * B_RE(w , sigma, rho, delta).item()
 B = np.sqrt( squared_B )
-print(squared_B, B)
+
 
 bound_2 = approximate_BPAC_bound(1-bound_1-snn_train_error, B)
 
