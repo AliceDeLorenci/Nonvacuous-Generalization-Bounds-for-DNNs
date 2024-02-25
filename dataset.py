@@ -12,7 +12,10 @@ class BMNIST(MNIST):
     def __init__(self, root, train, as_image=False, download=True):
 
         if as_image:
-            transform = transforms.Compose([transforms.PILToTensor()])
+            transform = transforms.Compose([
+                transforms.PILToTensor(),
+                transform.ConvertImageDtype(torch.float32)
+                ])
         else:
             transform = transforms.Compose([
                 transforms.PILToTensor(),
