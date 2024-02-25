@@ -133,7 +133,7 @@ def B_RE(w, sigma, rho, delta):
 
 #init parameters to optimise
 rho = torch.from_numpy(np.array([-3.])).to(device)
-sigma = 0.5*torch.from_numpy(np.log(1e-6 + 0.1*np.abs(w.detach().cpu().numpy()))).to(device)
+sigma = 0.5*torch.from_numpy(np.log(1e-6 + 0.2*np.abs(w.detach().cpu().numpy()))).to(device)
 
 w.requires_grad = True
 rho.requires_grad = True
