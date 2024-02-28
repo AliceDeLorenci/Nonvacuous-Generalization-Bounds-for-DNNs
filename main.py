@@ -20,6 +20,7 @@ from models import MLPModel
 from parsers import get_main_parser
 
 args = get_main_parser()
+print(args)
 
 batch_size = 1000
 nb_epochs = 20
@@ -96,7 +97,7 @@ w = parameters_to_vector(model.parameters()).detach()
 
 
 nb_snns =  200 #nb_snns = 150_000 # number of SNNs to average
-T = 1000  #T = 200_000; 
+T = args.T  #T = 200_000; 
 T_update = 150_000-1 # number of opt iterations
 b = 100
 c = 0.1
