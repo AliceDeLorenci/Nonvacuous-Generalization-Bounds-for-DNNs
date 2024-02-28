@@ -10,5 +10,5 @@ def get_main_parser():
     parser.add_argument('--nout', type=int, default=1, help='Number of outputs')
     
     parser.add_argument('--lr2', type=float, default=0.001, help='Learning rate 2')
-    
+    parser.add_argument('--sigma_init', type=float, default=0.1, help='Initial value of s') 
     return parser.parse_args() 
