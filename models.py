@@ -39,4 +39,4 @@ class MLPModel(nn.Module):
         if self.nout > 1:
             return torch.softmax(x, dim = 1)
         else:
-            return torch.tanh(torch.squeeze(x))
+            return 2*(torch.sigmoid(torch.squeeze(x))-0.5)
