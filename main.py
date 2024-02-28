@@ -21,7 +21,7 @@ from parsers import get_main_parser
 
 args = get_main_parser()
 
-batch_size = 100
+batch_size = 1000
 nb_epochs = 20
 
 
@@ -105,14 +105,11 @@ delta_prime = 0.01
 
 model_snn = deepcopy(model)
 
-def bound_objective(w, sigma, rho):
+def bound_objective(w, sigma, rho, model):
     
-    return loss(w,sigma) + torch.sqrt(0.5 * B_RE(w,sigma,rho, delta))
+    return loss(w,sigma, model) + torch.sqrt(0.5 * B_RE(w,sigma,rho, delta))
 
-def loss(w,sigma, model = model_snn):
-    
-    vector_to_parameters(w + torch.exp(2*sigma) * torch.randn(w.size()).to(device), model.parameters())
-   
+def loss(w,sigma, model) :
     loss = torch.from_numpy(np.array([0.0])).to(device)
     
     for batch in train_loader:
@@ -152,10 +149,12 @@ time1 = time.time()
 print_every = 50
 
 
+model_snn.train()
 loss_ = 0
 count_iter = 0 
 for t in trange(T):
-    pb_ = bound_objective(w, sigma, rho)
+    vector_to_parameters(w + torch.exp(2*sigma) * torch.randn(w.size()).to(device), model_snn.parameters())
+    pb_ = bound_objective(w, sigma, rho, model_snn)
     
     optimizer_2.zero_grad()
     pb_.backward()
@@ -189,6 +188,12 @@ print('Differences between start and end of second loop, w, sigma, rho', torch.n
 
 print('Monte-Carlo Estimation of SNNs accuracies') 
 print_every = 25
+model_snn.eval()
+
+w.requires_grad = False
+rho.requires_grad = False
+sigma.requires_grad = False
+
 # sampling SNNs for Monte Carlo estimation 
 for i in trange(nb_snns):
     vector_to_parameters(w + torch.exp(2*sigma) * torch.randn(w.size()).to(device), model_snn.parameters())
