@@ -12,6 +12,7 @@ def get_main_parser():
     parser.add_argument('--lr2', type=float, default=0.001, help='Learning rate 2')
     parser.add_argument('--sigma_init', type=float, default=1., help='Initial value of s')  # 1 for true-labels, 0.1 for random-labels
     parser.add_argument('--T', type=int, default=5000, help='Number of iterations of second loop')
+    parser.add_argument('--scheduler_patience', type=int, default=50, help='Patience of scheduler')
     
     parser.add_argument('--num_workers', type=int, default=4, help='Number of workers')
     return parser.parse_args() 
