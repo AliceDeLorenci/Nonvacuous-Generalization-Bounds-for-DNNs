@@ -168,22 +168,22 @@ if __name__ == '__main__':
         optimizer_2.step()
         loss_ += pb_.item()
     
-    best_loss = min(best_loss, pb_.item())
-    scheduler.step(best_loss) # NEW 
-    
-    if t == T_update:
-        for g in optimizer_2.param_groups:
-            g['lr'] = 1e-4
-    
-    count_iter+= 1
-    if count_iter % print_every == 0:
-        print(t+1, '/', T, 'average loss:' , np.round(loss_ / print_every, decimals=2)
-              , 'best loss:', np.round(best_loss, decimals=2)
-              , '\n ellasped time', time.time() - time1) 
-        loss_ = 0
-    
-    if count_iter % save_every == 0:
-        np.savez_compressed(PATH, w=w.detach().cpu().numpy(), sigma=sigma.detach().cpu().numpy(), rho=rho.detach().cpu().numpy()) # SAVE SNN PARAMETERS
+        best_loss = min(best_loss, pb_.item())
+        scheduler.step(best_loss) # NEW 
+        
+        if t == T_update:
+            for g in optimizer_2.param_groups:
+                g['lr'] = 1e-4
+        
+        count_iter+= 1
+        if count_iter % print_every == 0:
+            print(t+1, '/', T, 'average loss:' , np.round(loss_ / print_every, decimals=2)
+                , 'best loss:', np.round(best_loss, decimals=2)
+                , '\n ellasped time', time.time() - time1) 
+            loss_ = 0
+        
+        if count_iter % save_every == 0:
+            np.savez_compressed(PATH, w=w.detach().cpu().numpy(), sigma=sigma.detach().cpu().numpy(), rho=rho.detach().cpu().numpy()) # SAVE SNN PARAMETERS
 
     np.savez_compressed(PATH, w=w.detach().cpu().numpy(), sigma=sigma.detach().cpu().numpy(), rho=rho.detach().cpu().numpy()) # SAVE SNN PARAMETERS
 
