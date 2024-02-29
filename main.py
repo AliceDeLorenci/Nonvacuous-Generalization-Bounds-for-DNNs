@@ -51,7 +51,7 @@ if __name__ == '__main__':
 
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, pin_memory=True, num_workers=args.num_workers) 
     test_loader = DataLoader(test_dataset, batch_size=args.batch_size, pin_memory=True, num_workers=args.num_workers)
-    """
+
     print('Starting initial network training by SGD')
     for i in tqdm(range(args.epochs)):
         model.train()
@@ -95,11 +95,10 @@ if __name__ == '__main__':
     # SAVE SGD PARAMETERS
     fname = PATH+"sgd_model_{}.pt".format(timestamp)
     torch.save(model.state_dict(), fname)
-    """
 
-    # load model
-    fname = PATH+"sgd_model.pt"
-    model.load_state_dict(torch.load(fname))
+    # LOAD MODEL
+    # fname = PATH+"sgd_model.pt"
+    # model.load_state_dict(torch.load(fname))
 
     ############################# PAC-BAYES BOUND OPTIMIZATION #############################
 
@@ -129,6 +128,8 @@ if __name__ == '__main__':
 
     # Define the optimizer to update w, rho, and sigma
     optimizer_2 = optim.RMSprop(PB_params, lr=args.lr2)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer_2, mode='min', factor=0.2
+                                                    ,patience=args.scheduler_patience, min_lr=1e-6)
 
     # Number of iterations at which to decrease the learning rate to 0.0001
     T_update = 150_000-1 
@@ -165,6 +166,8 @@ if __name__ == '__main__':
         pb_.backward()
         optimizer_2.step()
         loss_ += pb_.item()
+    
+        scheduler.step(pb_.item()) # NEW 
         
         if t == T_update:
             for g in optimizer_2.param_groups:
@@ -238,8 +241,7 @@ if __name__ == '__main__':
 
     ############################# PAC BAYES BOUND #############################
 
-    # bound_1 = SamplesConvBound(snn_train_error, len(train_dataset), delta_prime, ) 
-    bound_1 = SamplesConvBound(snn_train_error, args.nb_snns, delta_prime, ) ## NEW: I think we should pass n=nb_snns instead of M=len(train_dataset)
+    bound_1 = SamplesConvBound(snn_train_error, args.nb_snns, delta_prime, ) 
 
     squared_B = 0.5 * B_RE(w, w0, sigma, rho, d, m).item()
     B = np.sqrt( squared_B )
