@@ -255,11 +255,14 @@ pb_bound_prev = bound_1 + B
 
 bound_2 = approximate_BPAC_bound(1-bound_1-snn_train_error, B)
 
+number_of_parameters = np.sum([p.numel() for p in model.parameters()])
 
+print('Number of parameters:', number_of_parameters)
 print('Train error:', 1-train_acc, 'Test error', 1-test_acc)
 print('SNN train error', snn_train_error,  'SNN test error',  np.mean(empirical_snn_test_errors_) )
 print('PAC-Bayes bound (before)', pb_bound_prev )
 print('PAC-Bayes bound', bound_2)
+
 
 PATH = "./save/results.txt"
 with open(PATH, 'w') as file:
@@ -267,3 +270,4 @@ with open(PATH, 'w') as file:
     file.write('SNN train error ' + str(snn_train_error) + ' SNN test error ' + str(np.mean(empirical_snn_test_errors_)) + '\n')
     file.write('PAC-Bayes bound (before) ' + str(pb_bound_prev) + '\n')
     file.write('PAC-Bayes bound ' + str(bound_2) + '\n')
+    file.write('Number of parameters ' + str(number_of_parameters) + '\n')
