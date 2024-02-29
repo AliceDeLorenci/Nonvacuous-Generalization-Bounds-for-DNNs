@@ -188,7 +188,9 @@ for t in tqdm(range(T)):
     
     count_iter+= 1
     if count_iter % print_every == 0:
-        print(t+1, '/', T, 'average loss:' , loss_ / print_every, 'best loss:', best_loss, '\n ellasped time', time.time() - time1) # why is the loss divided by print_every?
+        print(t+1, '/', T, 'average loss:' , np.round(loss_ / print_every, decimals=2)
+              , 'best loss:', np.round(best_loss, decimals=2)
+              , '\n ellasped time', time.time() - time1) 
         loss_ = 0
     
     if count_iter % save_every == 0:
