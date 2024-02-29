@@ -165,6 +165,7 @@ print_every = 50
 model_snn.train()
 loss_ = 0
 count_iter = 0
+best_loss = 1_000_000
 for t in tqdm(range(T)):
     # Update model_snn parameters with the current values of w (with noise added based on sigma)
     noisy_w = w + torch.exp(2 * sigma) * torch.randn_like(w)
@@ -178,7 +179,8 @@ for t in tqdm(range(T)):
     optimizer_2.step()
     loss_ += pb_.item()
     
-    scheduler.step(pb_.item()) # NEW 
+    best_loss = min(best_loss, pb_.item())
+    scheduler.step(best_loss) # NEW 
     
     if t == T_update:
         for g in optimizer_2.param_groups:
@@ -186,7 +188,7 @@ for t in tqdm(range(T)):
     
     count_iter+= 1
     if count_iter % print_every == 0:
-        print(t+1, '/', T, ' loss:' , loss_ / print_every, ' ellasped time', time.time() - time1) # why is the loss divided by print_every?
+        print(t+1, '/', T, 'average loss:' , loss_ / print_every, 'best loss:', best_loss, '\n ellasped time', time.time() - time1) # why is the loss divided by print_every?
         loss_ = 0
     
     if count_iter % save_every == 0:
