@@ -94,7 +94,7 @@ for i in tqdm(range(nb_epochs)):
 PATH = "./save/sgd_model.pt"
 torch.save(model.state_dict(), PATH)
 
-w = parameters_to_vector(model.parameters()).detach()
+w = parameters_to_vector(model.parameters()).detach().to(device)
 
 # second opt loop optimising the PAC-Bayes bound
 
@@ -142,7 +142,7 @@ rho.requires_grad = True
 sigma.requires_grad = True
 
 PB_params = nn.ParameterList()
-PB_params.append(w.to(device))
+PB_params.append(w)
 PB_params.append(rho)
 PB_params.append(sigma)
 
@@ -152,6 +152,10 @@ optimizer_2 = optim.RMSprop(PB_params, lr=args.lr2)
 #optimizer_2 = optim.ASGD(PB_params, lr=1e-3)
 time1 = time.time()
 print_every = 50
+
+# SAVE SNN PARAMETERS
+save_every = 1000
+PATH = "./save/snn_params.npz"
 
 
 model_snn.train()
@@ -163,8 +167,6 @@ for t in tqdm(range(T)):
     
     optimizer_2.zero_grad()
     pb_.backward()
-    
-    #print('w grad:' , w.grad, 'sigma grad:' , sigma.grad, 'rho grad:' , rho.grad)
     
     optimizer_2.step() 
     
@@ -178,10 +180,11 @@ for t in tqdm(range(T)):
     if count_iter % print_every == 0:
         print(t+1, '/', T, ' loss:' , loss_ / print_every, ' ellasped time', time.time() - time1) # why is the loss divided by print_every?
         loss_ = 0
+    
+    if count_iter % save_every == 0:
+        np.savez_compressed(PATH, w=w.detach().cpu().numpy(), sigma=sigma.detach().cpu().numpy(), rho=rho.detach().cpu().numpy()) # SAVE SNN PARAMETERS
 
-# SAVE SNN PARAMETERS
-PATH = "./save/snn_params.npz"
-np.savez_compressed(PATH, w=w.detach().cpu().numpy(), sigma=sigma.detach().cpu().numpy(), rho=rho.detach().cpu().numpy())
+np.savez_compressed(PATH, w=w.detach().cpu().numpy(), sigma=sigma.detach().cpu().numpy(), rho=rho.detach().cpu().numpy()) # SAVE SNN PARAMETERS
 
 rho_old = rho.detach().clone()
 
@@ -244,12 +247,19 @@ bound_1 = SamplesConvBound(snn_train_error, nb_snns, delta_prime, ) ## NEW: I th
 squared_B = 0.5 * B_RE(w , sigma, rho, delta).item()
 B = np.sqrt( squared_B )
 
-pb_bound_sd = bound_1 + B
+pb_bound_prev = bound_1 + B
 
 bound_2 = approximate_BPAC_bound(1-bound_1-snn_train_error, B)
 
 
 print('Train error:', 1-train_acc, 'Test error', 1-test_acc)
 print('SNN train error', snn_train_error,  'SNN test error',  np.mean(empirical_snn_test_errors_) )
-print('PAC-Bayes bound (Shwartz, David)', pb_bound_sd )
+print('PAC-Bayes bound (before)', pb_bound_prev )
 print('PAC-Bayes bound', bound_2)
+
+PATH = "./save/results.txt"
+with open(PATH, 'w') as file:
+    file.write('Train error: ' + str(1-train_acc) + ' Test error ' + str(1-test_acc) + '\n')
+    file.write('SNN train error ' + str(snn_train_error) + ' SNN test error ' + str(np.mean(empirical_snn_test_errors_)) + '\n')
+    file.write('PAC-Bayes bound (before) ' + str(pb_bound_prev) + '\n')
+    file.write('PAC-Bayes bound ' + str(bound_2) + '\n')
