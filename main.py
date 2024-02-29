@@ -152,6 +152,7 @@ if __name__ == '__main__':
     model_snn.train()
     loss_ = 0
     count_iter = 0
+    best_loss = 1_000_000
     print('Starting SNN training')
     for t in tqdm(range(args.T)):
         # Update model_snn parameters with the current values of w (with noise added based on sigma)
@@ -167,7 +168,8 @@ if __name__ == '__main__':
         optimizer_2.step()
         loss_ += pb_.item()
     
-        scheduler.step(pb_.item()) # NEW 
+        best_loss = min(best_loss, pb_.item())
+        scheduler.step(best_loss) # NEW 
         
         if t == T_update:
             for g in optimizer_2.param_groups:
@@ -175,7 +177,7 @@ if __name__ == '__main__':
         
         count_iter+= 1
         if count_iter % print_every == 0:
-            print(t+1, '/', args.T, ' loss:' , loss_ / print_every, ' ellasped time', time.time() - time1) 
+            print(t+1, '/', args.T, 'average loss:' , loss_ / print_every, 'best loss:', best_loss, '\n ellasped time', time.time() - time1) 
             loss_ = 0
         
         # SAVE SNN PARAMETERS
