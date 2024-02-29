@@ -46,8 +46,8 @@ w0 = parameters_to_vector(model.parameters()).to(device)
 train_dataset = BMNIST(root+'/train/', train=True, download=True) 
 test_dataset = BMNIST(root+'/test/', train=False, download=True)
 
-train_loader = DataLoader(train_dataset, batch_size=batch_size, pin_memory=True, num_workers=4) # speed up ? 
-test_loader = DataLoader(test_dataset, batch_size=batch_size, pin_memory=True, num_workers=4)
+train_loader = DataLoader(train_dataset, batch_size=batch_size, pin_memory=True, num_workers=args.num_workers) # speed up ? 
+test_loader = DataLoader(test_dataset, batch_size=batch_size, pin_memory=True, num_workers=args.num_workers)
 
 print('Starting first training loop...')
 # first opt loop: classification w logistic loss
