@@ -154,6 +154,7 @@ PB_params = nn.ParameterList([w, rho, sigma])
 
 # Define the optimizer to update w, rho, and sigma
 optimizer_2 = optim.RMSprop(PB_params, lr=args.lr2)
+scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer_2, mode='min', factor=0.2, patience=50, min_lr=1e-6)
 
 # Tracking time and initialization for the training loop
 time1 = time.time()
@@ -175,6 +176,8 @@ for t in tqdm(range(T)):
     pb_.backward()
     optimizer_2.step()
     loss_ += pb_.item()
+    
+    #scheduler.step(pb_.item()) # NEW 
     
     if t == T_update:
         for g in optimizer_2.param_groups:
