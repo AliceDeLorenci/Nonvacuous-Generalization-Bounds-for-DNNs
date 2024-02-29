@@ -177,8 +177,8 @@ if __name__ == '__main__':
         
         count_iter+= 1
         if count_iter % print_every == 0:
-            print(t+1, '/', args.T, 'average loss:' , np.round(loss_ / print_every, decimals=2)
-                , 'best loss:', np.round(best_loss, decimals=2)
+            print(t+1, '/', args.T, 'average loss:' , np.round(loss_ / print_every, decimals=4)
+                , 'best loss:', np.round(best_loss, decimals=4)
                 , '\n ellasped time', time.time() - time1) 
             loss_ = 0
         
