@@ -108,7 +108,7 @@ if __name__ == '__main__':
     # ! Note: parametrisation sigma = 0.5  \log s, \rho = 0.5 \log \lambda
         
     w = parameters_to_vector(model.parameters()).detach().to(device) # PAC-Bayes bound optimization starts from the weights learned by SGD
-    rho = torch.from_numpy(np.array([-3.]), dtype=np.float32).to(device)
+    rho = torch.from_numpy(np.array([-3.], dtype=np.float32)).to(device)
     sigma = 0.5*torch.from_numpy(np.log(1e-6 + args.sigma_init*np.abs(w.detach().cpu().numpy()))).to(device)
 
     w.requires_grad = True
