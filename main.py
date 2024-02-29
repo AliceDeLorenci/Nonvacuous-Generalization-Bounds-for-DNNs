@@ -200,8 +200,8 @@ rho = torch.from_numpy(rho).to(device)
 
 empirical_snn_train_errors_ = empirical_snn_test_errors_ = []
 
-print('Differences between start and end of second loop, w, sigma, rho', torch.norm(w-w_old), torch.norm(sigma-sigma_old))
-print('Difference before and after discretization of rho', torch.norm(rho-rho_old))
+#print('Differences between start and end of second loop, w, sigma, rho', torch.norm(w-w_old), torch.norm(sigma-sigma_old))
+#print('Difference before and after discretization of rho', torch.norm(rho-rho_old))
 
 print('Monte-Carlo Estimation of SNNs accuracies') 
 print_every = 25
@@ -266,8 +266,8 @@ print('PAC-Bayes bound', bound_2)
 
 PATH = "./save/results.txt"
 with open(PATH, 'w') as file:
+    file.write('Number of parameters ' + str(number_of_parameters) + '\n')
     file.write('Train error: ' + str(1-train_acc) + ' Test error ' + str(1-test_acc) + '\n')
     file.write('SNN train error ' + str(snn_train_error) + ' SNN test error ' + str(np.mean(empirical_snn_test_errors_)) + '\n')
     file.write('PAC-Bayes bound (before) ' + str(pb_bound_prev) + '\n')
     file.write('PAC-Bayes bound ' + str(bound_2) + '\n')
-    file.write('Number of parameters ' + str(number_of_parameters) + '\n')
