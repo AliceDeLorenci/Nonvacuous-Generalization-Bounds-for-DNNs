@@ -20,7 +20,7 @@ def bound_objective(model, loader, w, w0, sigma, rho, d, m, device, delta=0.025,
     return loss(model, loader, device) + torch.sqrt(0.5 * B_RE(w, w0, sigma, rho, d, m, delta, b, c))
 
 def loss(model, loader, device) :
-    loss = torch.from_numpy(np.array([0.0])).to(device)
+    loss = torch.Tensor([0.]).to(device)
     
     for batch in loader:
         x ,y = batch
