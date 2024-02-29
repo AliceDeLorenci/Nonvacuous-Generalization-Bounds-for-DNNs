@@ -48,7 +48,7 @@ def hoeffdingbnd(M,delta):
     return eps
 
 
-def SamplesConvBound(train_error=0.028,M=1000,delta=0.01,p_init = None, niter = 5):
+def SamplesConvBound( train_error=0.028, M=1000, delta=0.01, p_init=None, niter=5):
     c =  np.log(2/delta)/M
     if p_init is None:
         p_init = hoeffdingbnd(M,delta)

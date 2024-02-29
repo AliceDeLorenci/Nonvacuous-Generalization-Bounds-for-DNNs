@@ -9,11 +9,11 @@ from torchmetrics.classification import BinaryAccuracy
 import time 
 import os
 from copy import deepcopy
-from tqdm.notebook import tqdm, trange
+from tqdm import tqdm
 
 from torch.nn.utils import vector_to_parameters, parameters_to_vector
 
-from some_functions import Newt, SamplesConvBound, approximate_BPAC_bound
+from some_functions import SamplesConvBound, approximate_BPAC_bound
 from loss import logistic
 from models import MLPModel
 
@@ -51,7 +51,7 @@ test_loader = DataLoader(test_dataset, batch_size=batch_size, pin_memory=True, n
 
 print('Starting first training loop...')
 # first opt loop: classification w logistic loss
-for i in trange(nb_epochs):
+for i in tqdm(range(nb_epochs)):
     model.train()
     train_loss = 0
     train_acc = 0 
@@ -90,6 +90,9 @@ for i in trange(nb_epochs):
         , 'test loss', test_loss / len(test_loader))
     print('Train accuracy', train_acc, 'test accuracy', test_acc)
 
+# SAVE SGD PARAMETERS
+PATH = "./save/sgd_model.pt"
+torch.save(model.state_dict(), PATH)
 
 w = parameters_to_vector(model.parameters()).detach()
 
@@ -122,11 +125,12 @@ def loss(w,sigma, model) :
 # ! Note: parametrisastion sigma = 0.5  \log s, \rho = 0.5 \log \lambda
 d = float(len(w)); m = float(len(train_dataset))
 def B_RE(w, sigma, rho, delta):
-    KL = 1/ torch.exp(2*rho) *torch.sum(torch.exp(2*sigma)) - d + 1 / torch.exp(2*rho) * torch.norm(w-w0) 
+    # KL = 1/ torch.exp(2*rho) *torch.sum(torch.exp(2*sigma)) - d + 1 / torch.exp(2*rho) * torch.norm(w-w0)
+    KL = 1/ torch.exp(2*rho) *torch.sum(torch.exp(2*sigma)) - d + 1 / torch.exp(2*rho) * torch.norm(w-w0)**2 ## NEW: I think it is ||w - w0||^2, isn't it?
     KL = KL / 2.0
     KL = KL + d* rho 
     KL = KL -  torch.sum(sigma) 
-    B_RE =1/(m-1) * (KL + 2 * torch.log(b*np.log(c) - 2*rho*b )  + np.log( np.pi**2 * m / 6 / delta))
+    B_RE =1/(m-1) * (KL + 2 * torch.log(b*np.log(c) - 2*rho*b )  + np.log( np.pi**2 * m / (6 * delta)))
     return B_RE
 
 #init parameters to optimise
@@ -153,7 +157,7 @@ print_every = 50
 model_snn.train()
 loss_ = 0
 count_iter = 0 
-for t in trange(T):
+for t in tqdm(range(T)):
     vector_to_parameters(w + torch.exp(2*sigma) * torch.randn(w.size()).to(device), model_snn.parameters())
     pb_ = bound_objective(w, sigma, rho, model_snn)
     
@@ -172,8 +176,12 @@ for t in trange(T):
     
     count_iter+= 1
     if count_iter % print_every == 0:
-        print(t+1, '/', T, ' loss:' , loss_ / print_every, ' ellasped time', time.time() - time1)
+        print(t+1, '/', T, ' loss:' , loss_ / print_every, ' ellasped time', time.time() - time1) # why is the loss divided by print_every?
         loss_ = 0
+
+# SAVE SNN PARAMETERS
+PATH = "./save/snn_params.npz"
+np.savez_compressed(PATH, w=w.detach().cpu().numpy(), sigma=sigma.detach().cpu().numpy(), rho=rho.detach().cpu().numpy())
 
 rho_old = rho.detach().clone()
 
@@ -185,7 +193,8 @@ rho = torch.from_numpy(rho).to(device)
 
 empirical_snn_train_errors_ = empirical_snn_test_errors_ = []
 
-print('Differences between start and end of second loop, w, sigma, rho', torch.norm(w-w_old), torch.norm(sigma-sigma_old), torch.norm(rho-rho_old))
+print('Differences between start and end of second loop, w, sigma, rho', torch.norm(w-w_old), torch.norm(sigma-sigma_old))
+print('Difference before and after discretization of rho', torch.norm(rho-rho_old))
 
 print('Monte-Carlo Estimation of SNNs accuracies') 
 print_every = 25
@@ -196,7 +205,7 @@ rho.requires_grad = False
 sigma.requires_grad = False
 
 # sampling SNNs for Monte Carlo estimation 
-for i in trange(nb_snns):
+for i in tqdm(range(nb_snns)):
     vector_to_parameters(w + torch.exp(2*sigma) * torch.randn(w.size()).to(device), model_snn.parameters())
     
     train_accuracy = 0
@@ -206,31 +215,41 @@ for i in trange(nb_snns):
       
         with torch.no_grad():
             predictions = model_snn(x.to(device))
-            train_accuracy += CumstomAcc(predictions, y.to(device)).item()
+            # train_accuracy += CumstomAcc(predictions, y.to(device)).item()
+            train_accuracy += CumstomAcc(predictions, y.to(device)).item()*len(x) ## NEW
         
-    empirical_snn_train_errors_ += [1- train_accuracy / len(train_loader)]    
+    train_accuracy = train_accuracy / len(train_loader.dataset) ## NEW
+    # empirical_snn_train_errors_ += [1- train_accuracy / len(train_loader)] 
+    empirical_snn_train_errors_ += [1- train_accuracy] ## NEW   
     
     for batch in test_loader:
         x, y = batch
         
         with torch.no_grad(): 
             predictions = model_snn(x.to(device))
-            test_accuracy += CumstomAcc(predictions, y.to(device)).item()
-        
-    empirical_snn_test_errors_ += [1 - test_accuracy / len(test_loader)]
+            # test_accuracy += CumstomAcc(predictions, y.to(device)).item()
+            test_accuracy += CumstomAcc(predictions, y.to(device)).item()*len(x) ## NEW
+
+    test_accuracy = test_accuracy / len(test_loader.dataset) ## NEW
+    # empirical_snn_test_errors_ += [1 - test_accuracy / len(test_loader)]
+    empirical_snn_test_errors_ += [1 - test_accuracy] ## NEW
+
     if i % print_every == 0:
         print(i , '/ ', nb_snns, 'Train error:', np.mean(empirical_snn_train_errors_), 'Test error', np.mean(empirical_snn_test_errors_))
     
 snn_train_error = np.mean(empirical_snn_train_errors_)
-bound_1 = SamplesConvBound(snn_train_error, len(train_dataset), delta_prime, )
+# bound_1 = SamplesConvBound(snn_train_error, len(train_dataset), delta_prime, ) 
+bound_1 = SamplesConvBound(snn_train_error, nb_snns, delta_prime, ) ## NEW: I think we should pass n=nb_snns instead of M=len(train_dataset)
 
 squared_B = 0.5 * B_RE(w , sigma, rho, delta).item()
 B = np.sqrt( squared_B )
 
+pb_bound_sd = bound_1 + B
 
 bound_2 = approximate_BPAC_bound(1-bound_1-snn_train_error, B)
 
 
 print('Train error:', 1-train_acc, 'Test error', 1-test_acc)
 print('SNN train error', snn_train_error,  'SNN test error',  np.mean(empirical_snn_test_errors_) )
+print('PAC-Bayes bound (Shwartz, David)', pb_bound_sd )
 print('PAC-Bayes bound', bound_2)
