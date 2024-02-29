@@ -140,36 +140,40 @@ sigma = 0.5*torch.from_numpy(np.log(1e-6 + args.sigma_init*np.abs(w.detach().cpu
 w.requires_grad = True
 rho.requires_grad = True
 sigma.requires_grad = True
+save_every=50
+# Convert w to a nn.Parameter if it's not already one
+if not isinstance(w, nn.Parameter):
+    w = nn.Parameter(w)
 
-PB_params = nn.ParameterList()
-PB_params.append(w)
-PB_params.append(rho)
-PB_params.append(sigma)
+# Ensure rho and sigma are nn.Parameter objects and on the correct device
+rho = nn.Parameter(rho.to(device))
+sigma = nn.Parameter(sigma.to(device))
 
-w_old, sigma_old = w.detach().clone(), sigma.detach().clone()
+# Initialize the ParameterList and add the parameters
+PB_params = nn.ParameterList([w, rho, sigma])
 
+# Define the optimizer to update w, rho, and sigma
 optimizer_2 = optim.RMSprop(PB_params, lr=args.lr2)
-#optimizer_2 = optim.ASGD(PB_params, lr=1e-3)
+
+# Tracking time and initialization for the training loop
 time1 = time.time()
 print_every = 50
 
-# SAVE SNN PARAMETERS
-save_every = 1000
-PATH = "./save/snn_params.npz"
-
-
+# Start the training loop
 model_snn.train()
 loss_ = 0
-count_iter = 0 
+count_iter = 0
 for t in tqdm(range(T)):
-    vector_to_parameters(w + torch.exp(2*sigma) * torch.randn(w.size()).to(device), model_snn.parameters())
+    # Update model_snn parameters with the current values of w (with noise added based on sigma)
+    noisy_w = w + torch.exp(2 * sigma) * torch.randn_like(w)
+    vector_to_parameters(noisy_w, model_snn.parameters())
+
+    # Compute the PAC-Bayes bound objective
     pb_ = bound_objective(w, sigma, rho, model_snn)
-    
+    # Zero gradients, perform backward pass, and update parameters
     optimizer_2.zero_grad()
     pb_.backward()
-    
-    optimizer_2.step() 
-    
+    optimizer_2.step()
     loss_ += pb_.item()
     
     if t == T_update:
