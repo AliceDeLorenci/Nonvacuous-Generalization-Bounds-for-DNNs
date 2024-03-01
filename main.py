@@ -244,8 +244,15 @@ if __name__ == '__main__':
 
     for i in tqdm(range(args.nb_snns)):
         # sampling the SNN
-        vector_to_parameters(w + torch.exp(2*sigma) * torch.randn(w.size()).to(device), model_snn.parameters())
-        
+        #vector_to_parameters(w + torch.exp(2*sigma) * torch.randn(w.size()).to(device), model_snn.parameters())
+        noisy_w = w + torch.exp(2 * sigma) * torch.randn_like(w)
+ 
+        l = 0
+        for param in model_snn.parameters():
+            nl = param.numel()
+            param = noisy_w[l:l+nl].reshape(param.shape)
+            l += nl
+ 
         # compute train accuracy
         train_accuracy = 0
         test_accuracy = 0
