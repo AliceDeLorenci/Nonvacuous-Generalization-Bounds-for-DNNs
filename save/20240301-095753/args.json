@@ -1,0 +1,20 @@
+{
+    "nn_type": "cnn",
+    "nout": 1,
+    "nlayers": 2,
+    "nin_channels": 1,
+    "kernel_size": 3,
+    "nfilters": 16,
+    "nin": 784,
+    "nhid": 600,
+    "batch_size": 100,
+    "epochs": 20,
+    "lr": 0.01,
+    "weight_decay": 0.0,
+    "lr2": 0.001,
+    "sigma_init": 1.0,
+    "T": 5000,
+    "nb_snns": 200,
+    "scheduler_patience": 50,
+    "num_workers": 4
+}

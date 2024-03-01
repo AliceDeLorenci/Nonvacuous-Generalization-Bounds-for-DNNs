@@ -51,14 +51,11 @@ class CNNModel(nn.Module):
         self.outlayer = nn.Linear(fc_input_channels*fc_input_nrow*fc_input_ncol, nout) # output layer
 
         # Initialize weights and biases
-        # for layer in self.layers:
-        #     try: # MaxPool2d has no weight or bias
-        #         nn.init.trunc_normal_(layer.weight, mean=mu_init, std=sigma_init, a=-2*sigma_init, b=2*sigma_init)
-        #         nn.init.constant_(layer.bias, 0)
-        #     except:
-        #         pass
+        for layer in self.convlayers + [self.outlayer]:
+            nn.init.trunc_normal_(layer.weight, mean=mu_init, std=sigma_init, a=-2*sigma_init, b=2*sigma_init)
+            nn.init.constant_(layer.bias, 0)
 
-        # nn.init.constant_(self.layers[0].bias, 0.1)
+        nn.init.constant_(self.convlayers[0].bias, 0.1)
 
     def forward(self, x):
         for convlayer, poollayer in zip(self.convlayers, self.poollayers):
@@ -92,7 +89,6 @@ class CNNModel(nn.Module):
             tensor = poollayer(tensor)
 
         return tensor.size(1), tensor.size(2), tensor.size(3)
-
 
 
 class MLPModel(nn.Module):
