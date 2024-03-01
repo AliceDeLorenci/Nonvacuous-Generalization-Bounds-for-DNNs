@@ -149,10 +149,7 @@ if __name__ == '__main__':
     # Define the optimizer to update w, rho, and sigma
     optimizer_2 = optim.RMSprop(PB_params, lr=args.lr2)
     #scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer_2, mode='min', factor=0.2,patience=args.scheduler_patience, min_lr=1e-6)
-    scheduler = optim.lr_scheduler.OneCycleLR(optimizer_2, max_lr=args.lr2, total_steps=args.T, pct_start=0.1)
-    
-    # Number of iterations at which to decrease the learning rate to 0.0001
-    T_update = 150_000-1 
+    scheduler = optim.lr_scheduler.OneCycleLR(optimizer_2, max_lr=args.lr2, total_steps=args.T, pct_start=args.warmup_pct)
 
     # Sample convergence delta (for MC approximation of e(Q,S))
     delta_prime = 0.01  
@@ -186,7 +183,6 @@ if __name__ == '__main__':
             nl = param.numel()
             param = noisy_w[l:l+nl].reshape(param.shape)
             l += nl
-            
 
         # Compute the PAC-Bayes bound objective
         pb_ = bound_objective(model_snn, train_loader, scorer, w, w0, sigma, rho, d, m, device)
@@ -201,13 +197,8 @@ if __name__ == '__main__':
         best_loss = min(best_loss, current_loss)
         scheduler.step() # NEW 
         
-        
         if best_loss == current_loss:
             best_params = [w, rho, sigma]
-        
-        if t == T_update:
-            for g in optimizer_2.param_groups:
-                g['lr'] = 1e-4
         
         count_iter+= 1
         if count_iter % print_every == 0:
@@ -222,7 +213,7 @@ if __name__ == '__main__':
     np.savez_compressed(fname, w=w.detach().cpu().numpy(), sigma=sigma.detach().cpu().numpy(), rho=rho.detach().cpu().numpy()) # SAVE SNN PARAMETERS
 
 
-    w, rho, sigma = best_params
+    w, rho, sigma = best_params # using best parameters
     
     # Value of rho before quantization of lambda
     rho_old = rho.detach().clone()

@@ -9,7 +9,7 @@ def quantize_lambda(rho, device, b=100, c=0.1):
     lbda = torch.exp(2*rho).item()
     j = int(b * np.log(c / lbda))
     lbda = c * np.exp(- j / b)
-    rho = np.array( [0.5 * np.log(lbda)])
+    rho = np.array( [0.5 * np.log(lbda)], dtype=np.float32)
     rho = torch.from_numpy(rho).to(device)
     return rho
 
