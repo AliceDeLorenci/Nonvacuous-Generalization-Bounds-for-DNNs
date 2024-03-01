@@ -1,5 +1,7 @@
 # Custom
-/save/sgd_model*.pt
+/save/*/*
+!/save/*/results.txt
+!/save/*/args.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

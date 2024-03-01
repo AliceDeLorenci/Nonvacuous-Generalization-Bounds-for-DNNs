@@ -13,7 +13,7 @@ class BMNIST(MNIST):
         if as_image:
             transform = transforms.Compose([
                 transforms.PILToTensor(),
-                transform.ConvertImageDtype(torch.float32)
+                transforms.ConvertImageDtype(torch.float32)
                 ])
         else:
             transform = transforms.Compose([

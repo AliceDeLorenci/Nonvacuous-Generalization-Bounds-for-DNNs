@@ -36,33 +36,37 @@ class CNNModel(nn.Module):
             self.output_activation = lambda x: 2*(torch.sigmoid(torch.squeeze(x))-0.5)
 
         # Define layers
-        self.layers = nn.ModuleList()
+        self.convlayers = nn.ModuleList()
+        self.poollayers = nn.ModuleList()
 
-        self.layers.append(nn.Conv2d(nin_channels, nfilters, kernel_size, stride, padding, padding_mode)) # input layer
+        self.convlayers.append(nn.Conv2d(nin_channels, nfilters, kernel_size, stride=stride, padding=padding, padding_mode=padding_mode)) # input layer
+        self.poollayers.append(nn.MaxPool2d(pool_kernel_size, stride=pool_stride))
 
         for i in range(nlayers): # hidden layers
-            self.layers.append(nn.Conv2d(nfilters, nfilters, kernel_size, stride, padding, padding_mode))
-            self.layers.append(nn.MaxPool2d(pool_kernel_size, pool_stride))
+            self.convlayers.append(nn.Conv2d(nfilters, nfilters, kernel_size, stride=stride, padding=padding, padding_mode=padding_mode))
+            self.poollayers.append(nn.MaxPool2d(pool_kernel_size, stride=pool_stride))
         
         fc_input_channels, fc_input_nrow, fc_input_ncol = self.compute_fc_input_dim(nrow, ncol)
 
-        self.layers.append(nn.Linear(fc_input_channels*fc_input_nrow*fc_input_ncol, nout)) # output layer
+        self.outlayer = nn.Linear(fc_input_channels*fc_input_nrow*fc_input_ncol, nout) # output layer
 
         # Initialize weights and biases
-        for layer in self.layers:
-            nn.init.trunc_normal_(layer.weight
-                , mean=mu_init, std=sigma_init
-                , a=-2*sigma_init, b=2*sigma_init)
-            nn.init.constant_(layer.bias, 0)
+        # for layer in self.layers:
+        #     try: # MaxPool2d has no weight or bias
+        #         nn.init.trunc_normal_(layer.weight, mean=mu_init, std=sigma_init, a=-2*sigma_init, b=2*sigma_init)
+        #         nn.init.constant_(layer.bias, 0)
+        #     except:
+        #         pass
 
-        nn.init.constant_(self.layers[0].bias, 0.1)
+        # nn.init.constant_(self.layers[0].bias, 0.1)
 
     def forward(self, x):
-        for i, layer in enumerate(self.layers[:-1]):
-            x = layer(x).relu()
+        for convlayer, poollayer in zip(self.convlayers, self.poollayers):
+            x = convlayer(x).relu()
+            x = poollayer(x)
 
         x = x.view(x.size(0), -1)
-        x = self.layers[-1](x)
+        x = self.outlayer(x)
         return self.output_activation(x)
 
     def compute_fc_input_dim(self, nrow=28, ncol=28):
@@ -83,8 +87,9 @@ class CNNModel(nn.Module):
         tensor = torch.zeros(1, self.nin_channels, nrow, ncol, device="meta")
 
         # the tensor is passed through the convolutional layers to determine output size
-        for layer in self.layers:
-            tensor = layer(tensor)
+        for convlayer, poollayer in zip(self.convlayers, self.poollayers):
+            tensor = convlayer(tensor)
+            tensor = poollayer(tensor)
 
         return tensor.size(1), tensor.size(2), tensor.size(3)
 

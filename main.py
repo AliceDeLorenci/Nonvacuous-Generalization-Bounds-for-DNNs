@@ -4,6 +4,7 @@ import datetime
 import os
 from copy import deepcopy
 from tqdm import tqdm
+import json
 
 import torch
 from torch import nn, optim
@@ -22,10 +23,16 @@ if __name__ == '__main__':
     args = get_main_parser()
     print(args)
 
-    
-    PATH = "./save/" # folder to save results
-    timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S") # timestamp used on file names to avoid overwriting
+    # create timestamped (to avoid overwriting) to save results
+    timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    PATH = "./save/{}/".format(timestamp)
+    os.makedirs(PATH+timestamp, exist_ok=True)
 
+    # Save arguments for reproducibility
+    fname = PATH+"args.json"
+    with open(fname, 'w') as file:
+        json.dump(args.__dict__, file, indent=4)
+    
     # Choose torch device
     if torch.backends.mps.is_available():
         device = torch.device("mps")
@@ -97,7 +104,7 @@ if __name__ == '__main__':
         print('Train accuracy', train_acc, 'test accuracy', test_acc)
 
     # SAVE SGD PARAMETERS
-    fname = PATH+"sgd_model_{}.pt".format(timestamp)
+    fname = PATH+"sgd_model.pt"
     torch.save(model.state_dict(), fname)
 
     # LOAD MODEL
@@ -150,7 +157,7 @@ if __name__ == '__main__':
 
     # Interval to save SNN parameters
     save_every=50
-    fname = PATH+"snn_model_parameter_{}".format(timestamp)
+    fname = PATH+"snn_model_parameter"
 
     # Start the training loop
     model_snn.train()
@@ -265,7 +272,7 @@ if __name__ == '__main__':
     print('PAC-Bayes bound', bound_2)
 
 
-    fname = PATH+"results_{}.txt".format(timestamp)
+    fname = PATH+"results.txt"
     with open(fname, 'w') as file:
         file.write('Number of parameters ' + str(number_of_parameters) + '\n')
         file.write('Train error: ' + str(1-train_acc) + ' Test error ' + str(1-test_acc) + '\n')
