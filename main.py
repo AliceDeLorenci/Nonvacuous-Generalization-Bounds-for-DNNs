@@ -149,7 +149,8 @@ if __name__ == '__main__':
     # Define the optimizer to update w, rho, and sigma
     optimizer_2 = optim.RMSprop(PB_params, lr=args.lr2)
     #scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer_2, mode='min', factor=0.2,patience=args.scheduler_patience, min_lr=1e-6)
-
+    scheduler = optim.lr_scheduler.OneCycleLR(optimizer_2, max_lr=args.lr2, total_steps=args.T, pct_start=0.1)
+    
     # Number of iterations at which to decrease the learning rate to 0.0001
     T_update = 150_000-1 
 
@@ -172,11 +173,20 @@ if __name__ == '__main__':
     loss_ = 0
     count_iter = 0
     best_loss = 1_000_000
+    best_params = [w, rho, sigma]
+    
     print('Starting SNN training')
     for t in tqdm(range(args.T)):
         # Update model_snn parameters with the current values of w (with noise added based on sigma)
         noisy_w = w + torch.exp(2 * sigma) * torch.randn_like(w)
-        vector_to_parameters(noisy_w, model_snn.parameters())
+        #vector_to_parameters(noisy_w, model_snn.parameters())
+        
+        l = 0
+        for param in model_snn.parameters():
+            nl = param.numel()
+            param = noisy_w[l:l+nl].reshape(param.shape)
+            l += nl
+            
 
         # Compute the PAC-Bayes bound objective
         pb_ = bound_objective(model_snn, train_loader, scorer, w, w0, sigma, rho, d, m, device)
@@ -185,10 +195,15 @@ if __name__ == '__main__':
         optimizer_2.zero_grad()
         pb_.backward()
         optimizer_2.step()
-        loss_ += pb_.item()
+        current_loss = pb_.item()
+        loss_ += current_loss
     
-        best_loss = min(best_loss, pb_.item())
-        #scheduler.step(best_loss) # NEW 
+        best_loss = min(best_loss, current_loss)
+        scheduler.step() # NEW 
+        
+        
+        if best_loss == current_loss:
+            best_params = [w, rho, sigma]
         
         if t == T_update:
             for g in optimizer_2.param_groups:
@@ -206,6 +221,9 @@ if __name__ == '__main__':
 
     np.savez_compressed(fname, w=w.detach().cpu().numpy(), sigma=sigma.detach().cpu().numpy(), rho=rho.detach().cpu().numpy()) # SAVE SNN PARAMETERS
 
+
+    w, rho, sigma = best_params
+    
     # Value of rho before quantization of lambda
     rho_old = rho.detach().clone()
 
@@ -263,7 +281,8 @@ if __name__ == '__main__':
     ############################# PAC BAYES BOUND #############################
 
     bound_1 = SamplesConvBound(snn_train_error, args.nb_snns, delta_prime, ) 
-
+    
+    
     squared_B = 0.5 * B_RE(w, w0, sigma, rho, d, m).item()
     B = np.sqrt( squared_B )
 
