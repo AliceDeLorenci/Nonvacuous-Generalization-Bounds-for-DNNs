@@ -14,7 +14,7 @@ from torch.nn.utils import vector_to_parameters, parameters_to_vector
 from dataset import BMNIST
 from pacbayes import SamplesConvBound, approximate_BPAC_bound, bound_objective, B_RE, quantize_lambda
 from loss import logistic, CustomAccuracy
-from models import MLPModel
+from models import MLPModel, CNNModel
 from parsers import get_main_parser
 
 if __name__ == '__main__':
@@ -38,7 +38,10 @@ if __name__ == '__main__':
     ############################# INITIAL NETWORK TRAINING BY SGD #############################
 
     # Defining the model
-    model = MLPModel(args.nin, args.nlayers, args.nhid, args.nout).to(device)
+    if args.nn_type == 'cnn':
+        model = CNNModel(args.nin_channels, args.nout, args.nlayers, args.kernel_size, args.nfilters).to(device)
+    else:
+        model = MLPModel(args.nin, args.nlayers, args.nhid, args.nout).to(device)
     optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9, weight_decay=args.weight_decay) 
   
     # The random initialization will be used for the prior
@@ -46,8 +49,9 @@ if __name__ == '__main__':
 
     # MNIST dataset
     root = './data/MNIST'
-    train_dataset = BMNIST(root+'/train/', train=True, download=True) 
-    test_dataset = BMNIST(root+'/test/', train=False, download=True)
+    as_image = True if args.nn_type == 'cnn' else False
+    train_dataset = BMNIST(root+'/train/', train=True, as_image=as_image, download=True) 
+    test_dataset = BMNIST(root+'/test/', train=False, as_image=as_image, download=True)
 
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, pin_memory=True, num_workers=args.num_workers) 
     test_loader = DataLoader(test_dataset, batch_size=args.batch_size, pin_memory=True, num_workers=args.num_workers)

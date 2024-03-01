@@ -7,7 +7,10 @@ mu_init = 0
 sigma_init = 0.04
 
 class CNNModel(nn.Module):
-    def __init__(self, nin_channels, nout, nlayers, kernel_size, nfilters, stride, padding, padding_mode, nrow=28, ncol=28):
+    def __init__(self, nin_channels, nout, 
+                 nlayers, kernel_size, nfilters, stride=1, padding=0, padding_mode='zeros', 
+                 pool_kernel_size=2, pool_stride=2, 
+                 nrow=28, ncol=28):
         super(CNNModel, self).__init__()
         """
         Args:
@@ -39,8 +42,9 @@ class CNNModel(nn.Module):
 
         for i in range(nlayers): # hidden layers
             self.layers.append(nn.Conv2d(nfilters, nfilters, kernel_size, stride, padding, padding_mode))
+            self.layers.append(nn.MaxPool2d(pool_kernel_size, pool_stride))
         
-        fc_input_channels, fc_input_nrow, fc_input_ncol = self.compute_fc_input_dim()
+        fc_input_channels, fc_input_nrow, fc_input_ncol = self.compute_fc_input_dim(nrow, ncol)
 
         self.layers.append(nn.Linear(fc_input_channels*fc_input_nrow*fc_input_ncol, nout)) # output layer
 
