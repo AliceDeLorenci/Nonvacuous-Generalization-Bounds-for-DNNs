@@ -171,6 +171,7 @@ if __name__ == '__main__':
     count_iter = 0
     best_loss = 1_000_000
     best_params = [w, rho, sigma]
+    last_loss_improvement = 0
     
     print('Starting SNN training')
     for t in tqdm(range(args.T)):
@@ -199,6 +200,11 @@ if __name__ == '__main__':
         
         if best_loss == current_loss:
             best_params = [w, rho, sigma]
+            last_loss_improvement = 0
+        else:
+            last_loss_improvement += 1
+            if last_loss_improvement == args.best_loss_patience:
+                break
         
         count_iter+= 1
         if count_iter % print_every == 0:
@@ -213,7 +219,7 @@ if __name__ == '__main__':
     np.savez_compressed(fname, w=w.detach().cpu().numpy(), sigma=sigma.detach().cpu().numpy(), rho=rho.detach().cpu().numpy()) # SAVE SNN PARAMETERS
 
 
-    w, rho, sigma = best_params # using best parameters
+    #w, rho, sigma = best_params # using best parameters
     
     # Value of rho before quantization of lambda
     rho_old = rho.detach().clone()
@@ -237,7 +243,6 @@ if __name__ == '__main__':
     ############################# MC ESTIMATION OF SNN ERROR #############################
 
     for i in tqdm(range(args.nb_snns)):
-
         # sampling the SNN
         vector_to_parameters(w + torch.exp(2*sigma) * torch.randn(w.size()).to(device), model_snn.parameters())
         

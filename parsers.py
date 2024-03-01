@@ -28,6 +28,7 @@ def get_main_parser():
     parser.add_argument('--sigma_init', type=float, default=1., help='Scaling to apply to the initial value of s')  # 1 for true-labels, 0.1 for random-labels
     parser.add_argument('--T', type=int, default=5000, help='Number of iterations for PAC-Bayes bound optimization') # paper uses 200 000
     parser.add_argument('--nb_snns', type=int, default=200, help='Number of SNNs to sample for MC approximation') # paper uses 150 000
+    parser.add_argument('--best_loss_patience', type=int, default=1000, help='Patience of 2nd loop best loss')
     
     parser.add_argument('--scheduler_patience', type=int, default=50, help='Patience of scheduler')
     parser.add_argument('--warmup_pct', type=float, default=0.1, help='Percentage of iterations to warm up')
