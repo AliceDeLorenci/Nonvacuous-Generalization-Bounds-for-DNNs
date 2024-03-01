@@ -291,7 +291,7 @@ if __name__ == '__main__':
 
     pb_bound_prev = bound_1 + B
 
-    bound_2 = approximate_BPAC_bound(1-bound_1-snn_train_error, B)
+    bound_2 = approximate_BPAC_bound(1-bound_1, B)
 
     number_of_parameters = np.sum([p.numel() for p in model.parameters()])
 
