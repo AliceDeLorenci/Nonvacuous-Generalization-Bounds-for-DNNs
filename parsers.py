@@ -11,6 +11,7 @@ def get_main_parser():
     parser.add_argument('--batch_size', type=int, default=100, help='Batch size for SGD optimization')
     parser.add_argument('--epochs', type=int, default=20, help='Number of epochs for SGD optimization')
     parser.add_argument('--lr', type=float, default=0.01, help='Learning rate for SGD optimization')
+    parser.add_argument('--weight_decay', type=float, default=0., help='Weight decay for SGD optimization')
     
     parser.add_argument('--lr2', type=float, default=0.001, help='Learning rate for PAC-Bayes bound optimization')
     parser.add_argument('--sigma_init', type=float, default=1., help='Scaling to apply to the initial value of s')  # 1 for true-labels, 0.1 for random-labels

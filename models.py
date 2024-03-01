@@ -6,6 +6,86 @@ from torch import nn
 mu_init = 0
 sigma_init = 0.04
 
+class CNNModel(nn.Module):
+    def __init__(self, nin_channels, nout, nlayers, kernel_size, nfilters, stride, padding, padding_mode, nrow=28, ncol=28):
+        super(CNNModel, self).__init__()
+        """
+        Args:
+        - nin_channels: int, number of input channels
+        - nout: int, number of output units
+        - nlayers: int, number of hidden (convolutional) layers
+        - kernel_size: int, size of the convolutional kernel
+        - nfilters: int, number of filters
+        - stride: int, stride of the convolution
+        - padding: int, padding of the convolution
+        - padding_mode: string, padding mode of the convolution
+        - nrows: int, number of rows of the input image
+        - ncols: int, number of columns of the input image
+        """
+
+        self.nin_channels = nin_channels
+        self.nout = nout
+
+        # Determine output activation function (softmax for multiclass, sigmoid rescaled to [-1,1] for binary)
+        if self.nout > 1:
+            self.output_activation = lambda x: torch.softmax(x, dim = 1)
+        else:
+            self.output_activation = lambda x: 2*(torch.sigmoid(torch.squeeze(x))-0.5)
+
+        # Define layers
+        self.layers = nn.ModuleList()
+
+        self.layers.append(nn.Conv2d(nin_channels, nfilters, kernel_size, stride, padding, padding_mode)) # input layer
+
+        for i in range(nlayers): # hidden layers
+            self.layers.append(nn.Conv2d(nfilters, nfilters, kernel_size, stride, padding, padding_mode))
+        
+        fc_input_channels, fc_input_nrow, fc_input_ncol = self.compute_fc_input_dim()
+
+        self.layers.append(nn.Linear(fc_input_channels*fc_input_nrow*fc_input_ncol, nout)) # output layer
+
+        # Initialize weights and biases
+        for layer in self.layers:
+            nn.init.trunc_normal_(layer.weight
+                , mean=mu_init, std=sigma_init
+                , a=-2*sigma_init, b=2*sigma_init)
+            nn.init.constant_(layer.bias, 0)
+
+        nn.init.constant_(self.layers[0].bias, 0.1)
+
+    def forward(self, x):
+        for i, layer in enumerate(self.layers[:-1]):
+            x = layer(x).relu()
+
+        x = x.view(x.size(0), -1)
+        x = self.layers[-1](x)
+        return self.output_activation(x)
+
+    def compute_fc_input_dim(self, nrow=28, ncol=28):
+        """
+        Computes the input size of the fully connected layer of the encoder block.
+
+        Args:
+        - nrow: int, number of rows of the input image
+        - ncol: int, number of columns of the input image
+
+        Returns:
+        - int, number of channels of the output of the convolutional layers
+        - int, number of rows of the output of the convolutional layers
+        - int, number of columns of the output of the convolutional layers
+        """
+
+        # a meta tensor has no data
+        tensor = torch.zeros(1, self.nin_channels, nrow, ncol, device="meta")
+
+        # the tensor is passed through the convolutional layers to determine output size
+        for layer in self.layers:
+            tensor = layer(tensor)
+
+        return tensor.size(1), tensor.size(2), tensor.size(3)
+
+
+
 class MLPModel(nn.Module):
     def __init__(self, nin, nlayers, nhid, nout):
 

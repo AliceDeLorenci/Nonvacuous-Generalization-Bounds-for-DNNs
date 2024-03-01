@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     # Defining the model
     model = MLPModel(args.nin, args.nlayers, args.nhid, args.nout).to(device)
-    optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9) 
+    optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9, weight_decay=args.weight_decay) 
   
     # The random initialization will be used for the prior
     w0 = parameters_to_vector(model.parameters()).to(device)
@@ -261,7 +261,7 @@ if __name__ == '__main__':
     print('PAC-Bayes bound', bound_2)
 
 
-    fname = PATH+"retults_{}.txt".format(timestamp)
+    fname = PATH+"results_{}.txt".format(timestamp)
     with open(fname, 'w') as file:
         file.write('Number of parameters ' + str(number_of_parameters) + '\n')
         file.write('Train error: ' + str(1-train_acc) + ' Test error ' + str(1-test_acc) + '\n')
