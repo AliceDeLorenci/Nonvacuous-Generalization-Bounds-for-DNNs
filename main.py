@@ -14,7 +14,7 @@ from torch.nn.utils import vector_to_parameters, parameters_to_vector
 
 from dataset import BMNIST
 from pacbayes import SamplesConvBound, approximate_BPAC_bound, bound_objective, B_RE, quantize_lambda
-from loss import logistic, CustomAccuracy
+from loss import Scorer
 from models import MLPModel, CNNModel
 from parsers import get_main_parser
 
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     # create timestamped (to avoid overwriting) to save results
     timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     PATH = "./save/{}/".format(timestamp)
-    os.makedirs(PATH+timestamp, exist_ok=True)
+    os.makedirs(PATH, exist_ok=True)
 
     # Save arguments for reproducibility
     fname = PATH+"args.json"
@@ -41,6 +41,20 @@ if __name__ == '__main__':
     else:
         device = torch.device("cpu")     
     print("Using device:", device)
+
+
+    # Load MNIST dataset
+    root = './data/MNIST'
+    as_image = True if args.nn_type == 'cnn' else False
+    as_binary = True if args.nout == 1 else False
+    train_dataset = BMNIST(root+'/train/', train=True, as_image=as_image, as_binary=as_binary, download=True) 
+    test_dataset = BMNIST(root+'/test/', train=False, as_image=as_image, as_binary=as_binary, download=True)
+
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, pin_memory=True, num_workers=args.num_workers) 
+    test_loader = DataLoader(test_dataset, batch_size=args.batch_size, pin_memory=True, num_workers=args.num_workers)
+
+    # Scorer class (defines appropriate loss and accuracy)
+    scorer = Scorer(args.nout, device)
 
     ############################# INITIAL NETWORK TRAINING BY SGD #############################
 
@@ -58,15 +72,6 @@ if __name__ == '__main__':
     # The random initialization will be used for the prior
     w0 = parameters_to_vector(model.parameters()).to(device)
 
-    # MNIST dataset
-    root = './data/MNIST'
-    as_image = True if args.nn_type == 'cnn' else False
-    train_dataset = BMNIST(root+'/train/', train=True, as_image=as_image, download=True) 
-    test_dataset = BMNIST(root+'/test/', train=False, as_image=as_image, download=True)
-
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, pin_memory=True, num_workers=args.num_workers) 
-    test_loader = DataLoader(test_dataset, batch_size=args.batch_size, pin_memory=True, num_workers=args.num_workers)
-
     print('Starting initial network training by SGD')
     for i in tqdm(range(args.epochs)):
         model.train()
@@ -77,13 +82,13 @@ if __name__ == '__main__':
             optimizer.zero_grad()
 
             predictions = model(x.to(device))
-            current_loss = logistic(predictions, y.to(device))
+            current_loss = scorer.loss(predictions, y.to(device))
 
             current_loss.backward()
             optimizer.step()
         
             train_loss += current_loss.item()
-            train_acc += CustomAccuracy(predictions, y.to(device)).item()
+            train_acc += scorer.accuracy(predictions, y.to(device)).item()
             
         train_acc = train_acc / len(train_loader)
         
@@ -95,10 +100,10 @@ if __name__ == '__main__':
             
             with torch.no_grad():
                 predictions = model(x.to(device))
-                current_loss = logistic(predictions, y.to(device))
+                current_loss = scorer.loss(predictions, y.to(device))
 
             test_loss += current_loss.item()
-            test_acc += CustomAccuracy(predictions, y.to(device)).item()
+            test_acc += scorer.accuracy(predictions, y.to(device)).item()
             
         test_acc = test_acc / len(test_loader)
         
@@ -161,7 +166,7 @@ if __name__ == '__main__':
 
     # Interval to save SNN parameters
     save_every=50
-    fname = PATH+"snn_model_parameter"
+    fname = PATH+"snn_model_parameters"
 
     # Start the training loop
     model_snn.train()
@@ -175,7 +180,7 @@ if __name__ == '__main__':
         vector_to_parameters(noisy_w, model_snn.parameters())
 
         # Compute the PAC-Bayes bound objective
-        pb_ = bound_objective(model_snn, train_loader, w, w0, sigma, rho, d, m, device)
+        pb_ = bound_objective(model_snn, train_loader, scorer, w, w0, sigma, rho, d, m, device)
 
         # Zero gradients, perform backward pass, and update parameters
         optimizer_2.zero_grad()
@@ -198,9 +203,9 @@ if __name__ == '__main__':
             loss_ = 0
         
         if count_iter % save_every == 0:
-            np.savez_compressed(PATH, w=w.detach().cpu().numpy(), sigma=sigma.detach().cpu().numpy(), rho=rho.detach().cpu().numpy()) # SAVE SNN PARAMETERS
+            np.savez_compressed(fname, w=w.detach().cpu().numpy(), sigma=sigma.detach().cpu().numpy(), rho=rho.detach().cpu().numpy()) # SAVE SNN PARAMETERS
 
-    np.savez_compressed(PATH, w=w.detach().cpu().numpy(), sigma=sigma.detach().cpu().numpy(), rho=rho.detach().cpu().numpy()) # SAVE SNN PARAMETERS
+    np.savez_compressed(fname, w=w.detach().cpu().numpy(), sigma=sigma.detach().cpu().numpy(), rho=rho.detach().cpu().numpy()) # SAVE SNN PARAMETERS
 
     # Value of rho before quantization of lambda
     rho_old = rho.detach().clone()
@@ -235,7 +240,7 @@ if __name__ == '__main__':
             x ,y = batch
             with torch.no_grad():
                 predictions = model_snn(x.to(device))
-                train_accuracy += CustomAccuracy(predictions, y.to(device)).item()*len(x) 
+                train_accuracy += scorer.accuracy(predictions, y.to(device)).item()*len(x) 
             
         train_accuracy = train_accuracy / len(train_loader.dataset) 
         empirical_snn_train_errors_ += [1- train_accuracy] 
@@ -246,7 +251,7 @@ if __name__ == '__main__':
             
             with torch.no_grad(): 
                 predictions = model_snn(x.to(device))
-                test_accuracy += CustomAccuracy(predictions, y.to(device)).item()*len(x)
+                test_accuracy += scorer.accuracy(predictions, y.to(device)).item()*len(x)
 
         test_accuracy = test_accuracy / len(test_loader.dataset) 
         empirical_snn_test_errors_ += [1 - test_accuracy] 

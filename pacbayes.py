@@ -5,8 +5,6 @@ Some maybe useful functions, taken from https://github.com/gkdziugaite/pacbayes-
 import numpy as np
 import torch
 
-from loss import logistic
-
 def quantize_lambda(rho, device, b=100, c=0.1):
     lbda = torch.exp(2*rho).item()
     j = int(b * np.log(c / lbda))
@@ -15,16 +13,16 @@ def quantize_lambda(rho, device, b=100, c=0.1):
     rho = torch.from_numpy(rho).to(device)
     return rho
 
-def bound_objective(model, loader, w, w0, sigma, rho, d, m, device, delta=0.025, b=100, c=0.1):
+def bound_objective(model, loader, scorer, w, w0, sigma, rho, d, m, device, delta=0.025, b=100, c=0.1):
     
-    return loss(model, loader, device) + torch.sqrt(0.5 * B_RE(w, w0, sigma, rho, d, m, delta, b, c))
+    return loss(model, loader, scorer, device) + torch.sqrt(0.5 * B_RE(w, w0, sigma, rho, d, m, delta, b, c))
 
-def loss(model, loader, device) :
+def loss(model, loader, scorer, device) :
     loss = torch.Tensor([0.]).to(device)
     
     for batch in loader:
         x ,y = batch
-        loss += logistic(model(x.to(device)), y.to(device))
+        loss += scorer.loss(model(x.to(device)), y.to(device))
 
     return loss  / len(loader)
 

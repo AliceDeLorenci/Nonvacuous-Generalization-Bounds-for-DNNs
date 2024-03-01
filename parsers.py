@@ -5,7 +5,7 @@ def get_main_parser():
     parser = argparse.ArgumentParser(description="Parser for main training loop")
 
     parser.add_argument('--nn_type', type=str, default='mlp', choices=['mlp', 'cnn'], help='Type of neural network to use')
-    parser.add_argument('--nout', type=int, default=1, help='Number of outputs')
+    parser.add_argument('--nout', type=int, default=1, choices=[1, 10], help='Number of outputs')
     parser.add_argument('--nlayers', type=int, default=2, help='Number of hidden layers in the networks')
 
     # CNN specifications

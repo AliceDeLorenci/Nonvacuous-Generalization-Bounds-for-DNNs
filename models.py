@@ -99,6 +99,13 @@ class MLPModel(nn.Module):
         self.nout = nout
         self.layers = nn.ModuleList()
 
+        # Determine output activation function (softmax for multiclass, sigmoid rescaled to [-1,1] for binary)
+        if self.nout > 1:
+            self.output_activation = lambda x: torch.softmax(x, dim = 1)
+        else:
+            self.output_activation = lambda x: 2*(torch.sigmoid(torch.squeeze(x))-0.5)
+
+        # Define layers
         self.layers.append(nn.Linear(nin, nhid)) #input layer
 
         for i in range(nlayers): #hidden layers
@@ -106,6 +113,7 @@ class MLPModel(nn.Module):
 
         self.layers.append(nn.Linear(nhid, nout)) #output layer
 
+        # Initialize weights and biases
         for layer in self.layers:
             nn.init.trunc_normal_(layer.weight
                 , mean=mu_init, std=sigma_init
@@ -121,7 +129,4 @@ class MLPModel(nn.Module):
             else:
                 x = layer(x).relu()
  
-        if self.nout > 1:
-            return torch.softmax(x, dim = 1)
-        else:
-            return 2*(torch.sigmoid(torch.squeeze(x))-0.5)
+        return self.output_activation(x)

@@ -8,7 +8,7 @@ class BMNIST(MNIST):
     '''
     Class for MNIST dataset with binarised labels
     '''
-    def __init__(self, root, train, as_image=False, download=True):
+    def __init__(self, root, train, as_image=False, as_binary=True, download=True):
 
         if as_image:
             transform = transforms.Compose([
@@ -22,6 +22,9 @@ class BMNIST(MNIST):
                 transforms.Lambda(lambda x: torch.flatten(x)),
                 ])
 
-        target_transform = lambda x: 2*int(x < 5)-1
+        if as_binary:
+            target_transform = lambda x: 2*int(x < 5)-1
+        else:
+            target_transform = None
 
         super(BMNIST, self).__init__(root, train, transform, target_transform, download)
