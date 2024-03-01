@@ -108,7 +108,7 @@ if __name__ == '__main__':
     # ! Note: parametrisation sigma = 0.5  \log s, \rho = 0.5 \log \lambda
         
     w = parameters_to_vector(model.parameters()).detach().to(device) # PAC-Bayes bound optimization starts from the weights learned by SGD
-    rho = torch.from_numpy(np.array([-3.])).to(device)
+    rho = torch.Tensor([-3.]).to(device)
     sigma = 0.5*torch.from_numpy(np.log(1e-6 + args.sigma_init*np.abs(w.detach().cpu().numpy()))).to(device)
 
     w.requires_grad = True
@@ -168,22 +168,22 @@ if __name__ == '__main__':
         optimizer_2.step()
         loss_ += pb_.item()
     
-    best_loss = min(best_loss, pb_.item())
-    scheduler.step(best_loss) # NEW 
-    
-    if t == T_update:
-        for g in optimizer_2.param_groups:
-            g['lr'] = 1e-4
-    
-    count_iter+= 1
-    if count_iter % print_every == 0:
-        print(t+1, '/', T, 'average loss:' , np.round(loss_ / print_every, decimals=2)
-              , 'best loss:', np.round(best_loss, decimals=2)
-              , '\n ellasped time', time.time() - time1) 
-        loss_ = 0
-    
-    if count_iter % save_every == 0:
-        np.savez_compressed(PATH, w=w.detach().cpu().numpy(), sigma=sigma.detach().cpu().numpy(), rho=rho.detach().cpu().numpy()) # SAVE SNN PARAMETERS
+        best_loss = min(best_loss, pb_.item())
+        scheduler.step(best_loss) # NEW 
+        
+        if t == T_update:
+            for g in optimizer_2.param_groups:
+                g['lr'] = 1e-4
+        
+        count_iter+= 1
+        if count_iter % print_every == 0:
+            print(t+1, '/', args.T, 'average loss:' , np.round(loss_ / print_every, decimals=4)
+                , 'best loss:', np.round(best_loss, decimals=4)
+                , '\n ellasped time', time.time() - time1) 
+            loss_ = 0
+        
+        if count_iter % save_every == 0:
+            np.savez_compressed(PATH, w=w.detach().cpu().numpy(), sigma=sigma.detach().cpu().numpy(), rho=rho.detach().cpu().numpy()) # SAVE SNN PARAMETERS
 
     np.savez_compressed(PATH, w=w.detach().cpu().numpy(), sigma=sigma.detach().cpu().numpy(), rho=rho.detach().cpu().numpy()) # SAVE SNN PARAMETERS
 

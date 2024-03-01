@@ -8,7 +8,6 @@ class BMNIST(MNIST):
     '''
     Class for MNIST dataset with binarised labels
     '''
-
     def __init__(self, root, train, as_image=False, download=True):
 
         if as_image:

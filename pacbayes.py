@@ -20,7 +20,7 @@ def bound_objective(model, loader, w, w0, sigma, rho, d, m, device, delta=0.025,
     return loss(model, loader, device) + torch.sqrt(0.5 * B_RE(w, w0, sigma, rho, d, m, delta, b, c))
 
 def loss(model, loader, device) :
-    loss = torch.from_numpy(np.array([0.0])).to(device)
+    loss = torch.Tensor([0.]).to(device)
     
     for batch in loader:
         x ,y = batch
@@ -29,7 +29,6 @@ def loss(model, loader, device) :
     return loss  / len(loader)
 
 def B_RE(w, w0, sigma, rho, d, m, delta=0.025, b=100, c=0.1):
-    # KL = 1/ torch.exp(2*rho) *torch.sum(torch.exp(2*sigma)) - d + 1 / torch.exp(2*rho) * torch.norm(w-w0)
     KL = 1/ torch.exp(2*rho) *torch.sum(torch.exp(2*sigma)) - d + 1 / torch.exp(2*rho) * torch.norm(w-w0)**2 ## NEW: I think it is ||w - w0||^2, isn't it?
     KL = KL / 2.0
     KL = KL + d* rho 
