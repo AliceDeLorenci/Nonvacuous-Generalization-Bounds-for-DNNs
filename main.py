@@ -51,6 +51,10 @@ if __name__ == '__main__':
         model = MLPModel(args.nin, args.nlayers, args.nhid, args.nout).to(device)
     optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9, weight_decay=args.weight_decay) 
   
+    # SAVE INITIAL SGD PARAMETERS
+    fname = PATH+"sgd_model_random_initialization.pt"
+    torch.save(model.state_dict(), fname)
+
     # The random initialization will be used for the prior
     w0 = parameters_to_vector(model.parameters()).to(device)
 
