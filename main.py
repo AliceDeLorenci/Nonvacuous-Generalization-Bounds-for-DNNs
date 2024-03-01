@@ -148,8 +148,7 @@ if __name__ == '__main__':
 
     # Define the optimizer to update w, rho, and sigma
     optimizer_2 = optim.RMSprop(PB_params, lr=args.lr2)
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer_2, mode='min', factor=0.2
-                                                    ,patience=args.scheduler_patience, min_lr=1e-6)
+    #scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer_2, mode='min', factor=0.2,patience=args.scheduler_patience, min_lr=1e-6)
 
     # Number of iterations at which to decrease the learning rate to 0.0001
     T_update = 150_000-1 
@@ -189,7 +188,7 @@ if __name__ == '__main__':
         loss_ += pb_.item()
     
         best_loss = min(best_loss, pb_.item())
-        scheduler.step(best_loss) # NEW 
+        #scheduler.step(best_loss) # NEW 
         
         if t == T_update:
             for g in optimizer_2.param_groups:
