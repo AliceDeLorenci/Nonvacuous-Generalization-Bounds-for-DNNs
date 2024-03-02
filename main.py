@@ -245,7 +245,7 @@ if __name__ == '__main__':
 
     print('Monte-Carlo Estimation of SNNs accuracies') 
     print_every = 25
-    # model_snn.eval()
+    model_snn.eval()
 
     w.requires_grad = False
     rho.requires_grad = False
