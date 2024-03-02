@@ -1,5 +1,5 @@
 {
-    "nn_type": "cnn",
+    "nn_type": "mlp",
     "nout": 1,
     "nlayers": 2,
     "nin_channels": 1,
@@ -15,6 +15,8 @@
     "sigma_init": 1.0,
     "T": 5000,
     "nb_snns": 200,
+    "best_loss_patience": 1000,
     "scheduler_patience": 50,
+    "warmup_pct": 0.1,
     "num_workers": 4
 }

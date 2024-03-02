@@ -15,7 +15,7 @@ from torch.nn.utils import parameters_to_vector
 from dataset import BMNIST
 from pacbayes import SamplesConvBound, approximate_BPAC_bound, bound_objective, B_RE, quantize_lambda
 from loss import Scorer
-from models import MLPModel, CNNModel
+from models import MLPModel, CNNModel, flip_parameters_to_tensors, set_all_parameters
 from parsers import get_main_parser
 from utils import vec2params
 
@@ -25,8 +25,9 @@ if __name__ == '__main__':
     print(args)
 
     # create timestamped (to avoid overwriting) to save results
-    timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-    PATH = "./save/{}/".format(timestamp)
+    timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S") 
+    PATH = "./save/{}/".format(timestamp)                         
+    # PATH = "./save/only_loss_term/"                                ## !!!
     os.makedirs(PATH, exist_ok=True)
 
     # Save arguments for reproducibility
@@ -59,11 +60,13 @@ if __name__ == '__main__':
 
     ############################# INITIAL NETWORK TRAINING BY SGD #############################
 
-    # Defining the model
-    if args.nn_type == 'cnn':
-        model = CNNModel(args.nin_channels, args.nout, args.nlayers, args.kernel_size, args.nfilters).to(device)
-    else:
-        model = MLPModel(args.nin, args.nlayers, args.nhid, args.nout).to(device)
+    # Defining the model (defined inside a method so that it can be re-used to initialize snn)
+    def get_model():
+        if args.nn_type == 'cnn':
+            return CNNModel(args.nin_channels, args.nout, args.nlayers, args.kernel_size, args.nfilters).to(device)
+        else:
+            return MLPModel(args.nin, args.nlayers, args.nhid, args.nout).to(device)
+    model = get_model()
     optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9, weight_decay=args.weight_decay) 
   
     # SAVE INITIAL SGD PARAMETERS
@@ -123,7 +126,10 @@ if __name__ == '__main__':
 
     ############################# PAC-BAYES BOUND OPTIMIZATION #############################
 
-    model_snn = deepcopy(model)
+    # Defining the model
+    model_snn = get_model()
+
+    flip_parameters_to_tensors(model_snn)
 
     # INITIALIZE PARAMETERS TO OPTIMIZE
     # ! Note: parametrisation sigma = 0.5  \log s, \rho = 0.5 \log \lambda
@@ -167,7 +173,7 @@ if __name__ == '__main__':
     fname = PATH+"snn_model_parameters"
 
     # Start the training loop
-    model_snn.train()
+    # model_snn.train()
     loss_ = 0
     count_iter = 0
     best_loss = 1_000_000
@@ -180,14 +186,14 @@ if __name__ == '__main__':
         noisy_w = w + torch.exp(2 * sigma) * torch.randn_like(w)
         #vector_to_parameters(noisy_w, model_snn.parameters())
         
-        vec2params(noisy_w, model_snn)
-        """
-        l = 0
-        for param in model_snn.parameters():
-            nl = param.numel()
-            param = noisy_w[l:l+nl].reshape(param.shape)
-            l += nl
-        """
+        # l = 0
+        # for param in model_snn.parameters():
+        #     nl = param.numel()
+        #     param = noisy_w[l:l+nl].reshape(param.shape)
+        #     l += nl
+
+        set_all_parameters(model_snn, w)
+
         # Compute the PAC-Bayes bound objective
         pb_ = bound_objective(model_snn, train_loader, scorer, w, w0, sigma, rho, d, m, device)
 
@@ -237,7 +243,7 @@ if __name__ == '__main__':
 
     print('Monte-Carlo Estimation of SNNs accuracies') 
     print_every = 25
-    model_snn.eval()
+    # model_snn.eval()
 
     w.requires_grad = False
     rho.requires_grad = False
@@ -250,14 +256,13 @@ if __name__ == '__main__':
         #vector_to_parameters(w + torch.exp(2*sigma) * torch.randn(w.size()).to(device), model_snn.parameters())
         noisy_w = w + torch.exp(2 * sigma) * torch.randn_like(w)
  
-        vec2params(noisy_w, model_snn)
-        """
-        l = 0
-        for param in model_snn.parameters():
-            nl = param.numel()
-            param = noisy_w[l:l+nl].reshape(param.shape)
-            l += nl
-        """
+        # l = 0
+        # for param in model_snn.parameters():
+        #     nl = param.numel()
+        #     param = noisy_w[l:l+nl].reshape(param.shape)
+        #     l += nl
+        set_all_parameters(model_snn, w)
+ 
         # compute train accuracy
         train_accuracy = 0
         test_accuracy = 0
@@ -298,7 +303,8 @@ if __name__ == '__main__':
 
     bound_2 = approximate_BPAC_bound(1-bound_1, B)
 
-    number_of_parameters = np.sum([p.numel() for p in model.parameters()])
+    # number_of_parameters = np.sum([p.numel() for p in model.parameters()]
+    number_of_parameters = len(w)                        
 
     print('Number of parameters:', number_of_parameters)
     print('Train error:', 1-train_acc, 'Test error', 1-test_acc)
@@ -306,6 +312,7 @@ if __name__ == '__main__':
     print('PAC-Bayes bound (before)', pb_bound_prev )
     print('PAC-Bayes bound', bound_2)
 
+    print('Results saved in', PATH)
 
     fname = PATH+"results.txt"
     with open(fname, 'w') as file:
