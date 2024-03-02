@@ -192,7 +192,8 @@ if __name__ == '__main__':
         #     param = noisy_w[l:l+nl].reshape(param.shape)
         #     l += nl
 
-        set_all_parameters(model_snn, w)
+        #set_all_parameters(model_snn, w)
+        vec2params(noisy_w, model_snn)
 
         # Compute the PAC-Bayes bound objective
         pb_ = bound_objective(model_snn, train_loader, scorer, w, w0, sigma, rho, d, m, device)
@@ -261,7 +262,9 @@ if __name__ == '__main__':
         #     nl = param.numel()
         #     param = noisy_w[l:l+nl].reshape(param.shape)
         #     l += nl
-        set_all_parameters(model_snn, w)
+        #set_all_parameters(model_snn, w)
+        
+        vec2params(noisy_w, model_snn)
  
         # compute train accuracy
         train_accuracy = 0
