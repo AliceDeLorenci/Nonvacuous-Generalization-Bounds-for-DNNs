@@ -127,9 +127,10 @@ if __name__ == '__main__':
     ############################# PAC-BAYES BOUND OPTIMIZATION #############################
 
     # Defining the model
-    model_snn = get_model()
+    #model_snn = get_model()
+    model_snn = deepcopy(model)
 
-    flip_parameters_to_tensors(model_snn)
+    # flip_parameters_to_tensors(model_snn)
 
     # INITIALIZE PARAMETERS TO OPTIMIZE
     # ! Note: parametrisation sigma = 0.5  \log s, \rho = 0.5 \log \lambda
