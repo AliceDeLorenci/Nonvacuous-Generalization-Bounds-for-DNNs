@@ -30,7 +30,7 @@ def get_main_parser():
     parser.add_argument('--nb_snns', type=int, default=200, help='Number of SNNs to sample for MC approximation') # paper uses 150 000
     parser.add_argument('--best_loss_patience', type=int, default=1000, help='Patience of 2nd loop best loss')
     
-    parser.add_argument('--scheduler_patience', type=int, default=50, help='Patience of scheduler')
+    # Scheduler specifications
     parser.add_argument('--warmup_pct', type=float, default=0.1, help='Percentage of iterations to warm up')
     
     parser.add_argument('--num_workers', type=int, default=4, help='Number of workers')

@@ -4,14 +4,16 @@ Some maybe useful functions, taken from https://github.com/gkdziugaite/pacbayes-
 
 import numpy as np
 import torch
+from math import ceil, floor
 
 def quantize_lambda(rho, device, b=100, c=0.1):
     lbda = torch.exp(2*rho).item()
-    j = int(b * np.log(c / lbda))
-    lbda = c * np.exp(- j / b)
-    rho = np.array( [0.5 * np.log(lbda)], dtype=np.float32)
-    rho = torch.from_numpy(rho).to(device)
-    return rho
+    j = b * log(c / lbda); j_plus = ceil(j); j_minus = floor(j)
+    lbda_plus = c * np.exp(-j_plus / b); lbda_minus = c * np.exp(-j_minus / b)
+    rho_plus = 0.5 * log(lbda_plus); rho_minus = 0.5 * log(lbda_minus)
+    rho_plus = torch.FloatTensor(rho_plus); rho_minus = torch.FloatTensor(rho_minus)
+    
+    return rho_plus, rho_minus
 
 def bound_objective(model, loader, scorer, w, w0, sigma, rho, d, m, device, delta=0.025, b=100, c=0.1):
     
@@ -57,7 +59,6 @@ def approximate_BPAC_bound(train_accur, B_init, niter=5):
         return 1.0
     for i in range(niter):
         B_next = Newt(B_next,A,B_RE)
-        print(B_next)
     return B_next
 
 

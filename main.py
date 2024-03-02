@@ -156,7 +156,7 @@ if __name__ == '__main__':
 
     # Define the optimizer to update w, rho, and sigma
     optimizer_2 = optim.RMSprop(PB_params, lr=args.lr2)
-    #scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer_2, mode='min', factor=0.2,patience=args.scheduler_patience, min_lr=1e-6)
+
     scheduler = optim.lr_scheduler.OneCycleLR(optimizer_2, max_lr=args.lr2, total_steps=args.T, pct_start=args.warmup_pct)
 
     # Sample convergence delta (for MC approximation of e(Q,S))
@@ -236,7 +236,7 @@ if __name__ == '__main__':
     rho_old = rho.detach().clone()
 
     # Quantization of lambda
-    rho = quantize_lambda(rho, device)
+    rho_plus, rho_minus = quantize_lambda(rho, device)
 
     empirical_snn_train_errors_ = empirical_snn_test_errors_ = []
 
@@ -300,12 +300,13 @@ if __name__ == '__main__':
     bound_1 = SamplesConvBound(snn_train_error, args.nb_snns, delta_prime, ) 
     
     
-    squared_B = 0.5 * B_RE(w, w0, sigma, rho, d, m).item()
-    B = np.sqrt( squared_B )
+    B_minus = np.sqrt( 0.5 * B_RE(w, w0, sigma, rho_minus, d, m).item() )
+    B_plus = np.sqrt( 0.5 * B_RE(w, w0, sigma, rho_plus, d, m).item() )
+    
 
-    pb_bound_prev = bound_1 + B
+    pb_bound_prev = bound_1 + min(B_plus, B_minus) 
 
-    bound_2 = approximate_BPAC_bound(1-bound_1, B)
+    bound_2 = approximate_BPAC_bound(1-bound_1, min(B_plus, B_minus) )
 
     # number_of_parameters = np.sum([p.numel() for p in model.parameters()]
     number_of_parameters = len(w)                        
