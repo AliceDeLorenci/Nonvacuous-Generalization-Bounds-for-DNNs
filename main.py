@@ -24,8 +24,9 @@ if __name__ == '__main__':
     print(args)
 
     # create timestamped (to avoid overwriting) to save results
-    timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-    PATH = "./save/{}/".format(timestamp)
+    timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S") 
+    PATH = "./save/{}/".format(timestamp)                         
+    # PATH = "./save/only_loss_term/"                                ## !!!
     os.makedirs(PATH, exist_ok=True)
 
     # Save arguments for reproducibility
@@ -58,11 +59,13 @@ if __name__ == '__main__':
 
     ############################# INITIAL NETWORK TRAINING BY SGD #############################
 
-    # Defining the model
-    if args.nn_type == 'cnn':
-        model = CNNModel(args.nin_channels, args.nout, args.nlayers, args.kernel_size, args.nfilters).to(device)
-    else:
-        model = MLPModel(args.nin, args.nlayers, args.nhid, args.nout).to(device)
+    # Defining the model (defined inside a method so that it can be re-used to initialize snn)
+    def get_model():
+        if args.nn_type == 'cnn':
+            return CNNModel(args.nin_channels, args.nout, args.nlayers, args.kernel_size, args.nfilters).to(device)
+        else:
+            return MLPModel(args.nin, args.nlayers, args.nhid, args.nout).to(device)
+    model = get_model()
     optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9, weight_decay=args.weight_decay) 
   
     # SAVE INITIAL SGD PARAMETERS
@@ -122,7 +125,41 @@ if __name__ == '__main__':
 
     ############################# PAC-BAYES BOUND OPTIMIZATION #############################
 
-    model_snn = deepcopy(model)
+    # Defining the model
+    model_snn = get_model()
+
+    def flip_parameters_to_tensors(module):
+        attr = []
+        while bool(module._parameters):
+            attr.append( module._parameters.popitem() )
+        setattr(module, 'registered_parameters_name', [])
+
+        for i in attr:
+            setattr(module, i[0], torch.zeros(i[1].shape,requires_grad=True))
+            module.registered_parameters_name.append(i[0])
+
+        module_name = [k for k,v in module._modules.items()]
+
+        for name in module_name:
+            flip_parameters_to_tensors(module._modules[name])
+
+    def set_all_parameters(module, theta):
+        count = 0  
+
+        for name in module.registered_parameters_name:
+            a = count
+            b = a + getattr(module, name).numel()
+            t = torch.reshape(theta[a:b], getattr(module, name).shape)
+            setattr(module, name, t)
+
+            count += getattr(module, name).numel()
+
+        module_name = [k for k,v in module._modules.items()]
+        for name in module_name:
+            count += set_all_parameters(module._modules[name], theta)
+        return count
+
+    flip_parameters_to_tensors(model_snn)
 
     # INITIALIZE PARAMETERS TO OPTIMIZE
     # ! Note: parametrisation sigma = 0.5  \log s, \rho = 0.5 \log \lambda
@@ -179,11 +216,13 @@ if __name__ == '__main__':
         noisy_w = w + torch.exp(2 * sigma) * torch.randn_like(w)
         #vector_to_parameters(noisy_w, model_snn.parameters())
         
-        l = 0
-        for param in model_snn.parameters():
-            nl = param.numel()
-            param = noisy_w[l:l+nl].reshape(param.shape)
-            l += nl
+        # l = 0
+        # for param in model_snn.parameters():
+        #     nl = param.numel()
+        #     param = noisy_w[l:l+nl].reshape(param.shape)
+        #     l += nl
+
+        set_all_parameters(model_snn, w)
 
         # Compute the PAC-Bayes bound objective
         pb_ = bound_objective(model_snn, train_loader, scorer, w, w0, sigma, rho, d, m, device)
@@ -301,6 +340,7 @@ if __name__ == '__main__':
     print('PAC-Bayes bound (before)', pb_bound_prev )
     print('PAC-Bayes bound', bound_2)
 
+    print('Results saved in', PATH)
 
     fname = PATH+"results.txt"
     with open(fname, 'w') as file:
