@@ -186,12 +186,6 @@ if __name__ == '__main__':
         # Update model_snn parameters with the current values of w (with noise added based on sigma)
         noisy_w = w + torch.exp(2 * sigma) * torch.randn_like(w)
         #vector_to_parameters(noisy_w, model_snn.parameters())
-        
-        # l = 0
-        # for param in model_snn.parameters():
-        #     nl = param.numel()
-        #     param = noisy_w[l:l+nl].reshape(param.shape)
-        #     l += nl
 
         #set_all_parameters(model_snn, w)
         model_snn = vec2params(noisy_w, model_snn)
@@ -238,7 +232,8 @@ if __name__ == '__main__':
     # Quantization of lambda
     rho_plus, rho_minus = quantize_lambda(rho, device)
 
-    empirical_snn_train_errors_ = empirical_snn_test_errors_ = []
+    empirical_snn_train_errors_ = []
+    empirical_snn_test_errors_ = []
 
     #print('Differences between start and end of second loop, w, sigma, rho', torch.norm(w-w_old), torch.norm(sigma-sigma_old))
     #print('Difference before and after discretization of rho', torch.norm(rho-rho_old))
@@ -257,15 +252,9 @@ if __name__ == '__main__':
         # sampling the SNN
         #vector_to_parameters(w + torch.exp(2*sigma) * torch.randn(w.size()).to(device), model_snn.parameters())
         noisy_w = w + torch.exp(2 * sigma) * torch.randn_like(w)
- 
-        # l = 0
-        # for param in model_snn.parameters():
-        #     nl = param.numel()
-        #     param = noisy_w[l:l+nl].reshape(param.shape)
-        #     l += nl
-        #set_all_parameters(model_snn, w)
-        
         model_snn = vec2params(noisy_w, model_snn)
+
+        #set_all_parameters(model_snn, w)
  
         # compute train accuracy
         train_accuracy = 0
@@ -282,7 +271,6 @@ if __name__ == '__main__':
         # compute test accuracy
         for batch in test_loader:
             x, y = batch
-            
             with torch.no_grad(): 
                 predictions = model_snn(x.to(device))
                 test_accuracy += scorer.accuracy(predictions, y.to(device)).item()*len(x)
@@ -308,7 +296,6 @@ if __name__ == '__main__':
 
     bound_2 = approximate_BPAC_bound(1-bound_1, min(B_plus, B_minus) )
 
-    # number_of_parameters = np.sum([p.numel() for p in model.parameters()]
     number_of_parameters = len(w)                        
 
     print('Number of parameters:', number_of_parameters)
