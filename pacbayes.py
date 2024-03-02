@@ -16,8 +16,8 @@ def quantize_lambda(rho, device, b=100, c=0.1):
 def bound_objective(model, loader, scorer, w, w0, sigma, rho, d, m, device, delta=0.025, b=100, c=0.1):
     
     loss_term = loss(model, loader, scorer, device)
-    # bre_term = torch.sqrt(0.5 * B_RE(w, w0, sigma, rho, d, m, delta, b, c))   ## !!!
-    bre_term = 0
+    bre_term = torch.sqrt(0.5 * B_RE(w, w0, sigma, rho, d, m, delta, b, c))   ## !!!
+    # bre_term = 0
     return loss_term + bre_term
 
 def loss(model, loader, scorer, device) :
