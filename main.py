@@ -10,13 +10,14 @@ import torch
 from torch import nn, optim
 from torch.utils.data import DataLoader
 from torchmetrics.classification import BinaryAccuracy 
-from torch.nn.utils import vector_to_parameters, parameters_to_vector
+from torch.nn.utils import parameters_to_vector
 
 from dataset import BMNIST
 from pacbayes import SamplesConvBound, approximate_BPAC_bound, bound_objective, B_RE, quantize_lambda
 from loss import Scorer
 from models import MLPModel, CNNModel
 from parsers import get_main_parser
+from utils import vec2params
 
 if __name__ == '__main__':
 
@@ -179,12 +180,14 @@ if __name__ == '__main__':
         noisy_w = w + torch.exp(2 * sigma) * torch.randn_like(w)
         #vector_to_parameters(noisy_w, model_snn.parameters())
         
+        vec2params(noisy_w, model_snn)
+        """
         l = 0
         for param in model_snn.parameters():
             nl = param.numel()
             param = noisy_w[l:l+nl].reshape(param.shape)
             l += nl
-
+        """
         # Compute the PAC-Bayes bound objective
         pb_ = bound_objective(model_snn, train_loader, scorer, w, w0, sigma, rho, d, m, device)
 
@@ -247,12 +250,14 @@ if __name__ == '__main__':
         #vector_to_parameters(w + torch.exp(2*sigma) * torch.randn(w.size()).to(device), model_snn.parameters())
         noisy_w = w + torch.exp(2 * sigma) * torch.randn_like(w)
  
+        vec2params(noisy_w, model_snn)
+        """
         l = 0
         for param in model_snn.parameters():
             nl = param.numel()
             param = noisy_w[l:l+nl].reshape(param.shape)
             l += nl
- 
+        """
         # compute train accuracy
         train_accuracy = 0
         test_accuracy = 0
