@@ -15,7 +15,7 @@ from torch.nn.utils import vector_to_parameters, parameters_to_vector
 from dataset import BMNIST
 from pacbayes import SamplesConvBound, approximate_BPAC_bound, bound_objective, B_RE, quantize_lambda
 from loss import Scorer
-from models import MLPModel, CNNModel
+from models import MLPModel, CNNModel, flip_parameters_to_tensors, set_all_parameters
 from parsers import get_main_parser
 
 if __name__ == '__main__':
@@ -128,37 +128,6 @@ if __name__ == '__main__':
     # Defining the model
     model_snn = get_model()
 
-    def flip_parameters_to_tensors(module):
-        attr = []
-        while bool(module._parameters):
-            attr.append( module._parameters.popitem() )
-        setattr(module, 'registered_parameters_name', [])
-
-        for i in attr:
-            setattr(module, i[0], torch.zeros(i[1].shape,requires_grad=True))
-            module.registered_parameters_name.append(i[0])
-
-        module_name = [k for k,v in module._modules.items()]
-
-        for name in module_name:
-            flip_parameters_to_tensors(module._modules[name])
-
-    def set_all_parameters(module, theta):
-        count = 0  
-
-        for name in module.registered_parameters_name:
-            a = count
-            b = a + getattr(module, name).numel()
-            t = torch.reshape(theta[a:b], getattr(module, name).shape)
-            setattr(module, name, t)
-
-            count += getattr(module, name).numel()
-
-        module_name = [k for k,v in module._modules.items()]
-        for name in module_name:
-            count += set_all_parameters(module._modules[name], theta)
-        return count
-
     flip_parameters_to_tensors(model_snn)
 
     # INITIALIZE PARAMETERS TO OPTIMIZE
@@ -203,7 +172,7 @@ if __name__ == '__main__':
     fname = PATH+"snn_model_parameters"
 
     # Start the training loop
-    model_snn.train()
+    # model_snn.train()
     loss_ = 0
     count_iter = 0
     best_loss = 1_000_000
@@ -273,7 +242,7 @@ if __name__ == '__main__':
 
     print('Monte-Carlo Estimation of SNNs accuracies') 
     print_every = 25
-    model_snn.eval()
+    # model_snn.eval()
 
     w.requires_grad = False
     rho.requires_grad = False
@@ -286,11 +255,12 @@ if __name__ == '__main__':
         #vector_to_parameters(w + torch.exp(2*sigma) * torch.randn(w.size()).to(device), model_snn.parameters())
         noisy_w = w + torch.exp(2 * sigma) * torch.randn_like(w)
  
-        l = 0
-        for param in model_snn.parameters():
-            nl = param.numel()
-            param = noisy_w[l:l+nl].reshape(param.shape)
-            l += nl
+        # l = 0
+        # for param in model_snn.parameters():
+        #     nl = param.numel()
+        #     param = noisy_w[l:l+nl].reshape(param.shape)
+        #     l += nl
+        set_all_parameters(model_snn, w)
  
         # compute train accuracy
         train_accuracy = 0
@@ -332,7 +302,8 @@ if __name__ == '__main__':
 
     bound_2 = approximate_BPAC_bound(1-bound_1, B)
 
-    number_of_parameters = np.sum([p.numel() for p in model.parameters()])
+    # number_of_parameters = np.sum([p.numel() for p in model.parameters()]
+    number_of_parameters = len(w)                        
 
     print('Number of parameters:', number_of_parameters)
     print('Train error:', 1-train_acc, 'Test error', 1-test_acc)
