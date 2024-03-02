@@ -11,3 +11,5 @@ def vec2params(new_params, model):
         nl = param.numel()
         param = new_params[l:l+nl].reshape(param.shape)
         l += nl
+    
+    return model
