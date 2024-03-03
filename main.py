@@ -185,10 +185,8 @@ if __name__ == '__main__':
     for t in tqdm(range(args.T)):
         # Update model_snn parameters with the current values of w (with noise added based on sigma)
         noisy_w = w + torch.exp(2 * sigma) * torch.randn_like(w)
-        #vector_to_parameters(noisy_w, model_snn.parameters())
 
-        #set_all_parameters(model_snn, w)
-        model_snn = vec2params(noisy_w, model_snn)
+        set_all_parameters(model_snn, noisy_w)
 
         # Compute the PAC-Bayes bound objective
         pb_ = bound_objective(model_snn, train_loader, scorer, w, w0, sigma, rho, d, m, device)
@@ -250,11 +248,8 @@ if __name__ == '__main__':
 
     for i in tqdm(range(args.nb_snns)):
         # sampling the SNN
-        #vector_to_parameters(w + torch.exp(2*sigma) * torch.randn(w.size()).to(device), model_snn.parameters())
         noisy_w = w + torch.exp(2 * sigma) * torch.randn_like(w)
-        model_snn = vec2params(noisy_w, model_snn)
-
-        #set_all_parameters(model_snn, w)
+        set_all_parameters(model_snn, noisy_w)
  
         # compute train accuracy
         train_accuracy = 0
