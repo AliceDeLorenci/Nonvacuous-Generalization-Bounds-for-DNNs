@@ -156,7 +156,8 @@ if __name__ == '__main__':
     # Define the optimizer to update w, rho, and sigma
     optimizer_2 = optim.RMSprop(PB_params, lr=args.lr2)
 
-    scheduler = optim.lr_scheduler.OneCycleLR(optimizer_2, max_lr=args.lr2, total_steps=args.T, pct_start=args.warmup_pct)
+    if args.scheduler == 'onecycle':
+        scheduler = optim.lr_scheduler.OneCycleLR(optimizer_2, max_lr=args.lr2, total_steps=args.T, pct_start=args.warmup_pct)
 
     # Sample convergence delta (for MC approximation of e(Q,S))
     delta_prime = 0.01  
@@ -198,7 +199,8 @@ if __name__ == '__main__':
         loss_ += current_loss
     
         best_loss = min(best_loss, current_loss)
-        scheduler.step() # NEW 
+        if args.scheduler != 'none':
+            scheduler.step() # NEW 
         
         if best_loss == current_loss:
             best_params = [w, rho, sigma]

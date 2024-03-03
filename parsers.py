@@ -3,6 +3,7 @@ import argparse
 
 def get_main_parser():
     parser = argparse.ArgumentParser(description="Parser for main training loop")
+    
 
     parser.add_argument('--nn_type', type=str, default='mlp', choices=['mlp', 'cnn'], help='Type of neural network to use')
     parser.add_argument('--nout', type=int, default=1, choices=[1, 10], help='Number of outputs')
@@ -31,7 +32,10 @@ def get_main_parser():
     parser.add_argument('--best_loss_patience', type=int, default=1000, help='Patience of 2nd loop best loss')
     
     # Scheduler specifications
+    parser.add_argument('--scheduler', type=str, default='onecycle', choices=['none', 'onecycle'], help='Scheduler for the learning rate')
     parser.add_argument('--warmup_pct', type=float, default=0.1, help='Percentage of iterations to warm up')
     
     parser.add_argument('--num_workers', type=int, default=4, help='Number of workers')
+    
+    
     return parser.parse_args() 
