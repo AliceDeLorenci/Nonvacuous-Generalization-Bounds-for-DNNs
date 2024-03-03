@@ -11,7 +11,7 @@ def quantize_lambda(rho, device, b=100, c=0.1):
     j = b * np.log(c / lbda); j_plus = ceil(j); j_minus = floor(j)
     lbda_plus = c * np.exp(-j_plus / b); lbda_minus = c * np.exp(-j_minus / b)
     rho_plus = 0.5 * np.log(lbda_plus); rho_minus = 0.5 * np.log(lbda_minus)
-    rho_plus = torch.FloatTensor([rho_plus]); rho_minus = torch.FloatTensor([rho_minus])
+    rho_plus = torch.FloatTensor([rho_plus]).to(device); rho_minus = torch.FloatTensor([rho_minus]).to(device)
     
     return rho_plus, rho_minus
 
