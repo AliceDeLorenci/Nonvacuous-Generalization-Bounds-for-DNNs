@@ -216,6 +216,11 @@ if __name__ == '__main__':
                 , 'best loss:', np.round(best_loss, decimals=4)
                 , '\n ellasped time', time.time() - time1) 
             loss_ = 0
+
+        with open(PATH+"progress.txt", 'a') as file:
+            file.write(str(t+1) + '/' + str(args.T) + ' average loss: ' + str(np.round(loss_ / print_every, decimals=4))
+                + ' best loss: ' + str(np.round(best_loss, decimals=4))
+                + ' ellasped time' + str(time.time() - time1) + '\n')
         
         if count_iter % save_every == 0:
             np.savez_compressed(fname, w=w.detach().cpu().numpy(), sigma=sigma.detach().cpu().numpy(), rho=rho.detach().cpu().numpy()) # SAVE SNN PARAMETERS
