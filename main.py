@@ -24,11 +24,15 @@ if __name__ == '__main__':
     print(args)
 
     # create timestamped (to avoid overwriting) to save results
-    timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S") 
-    PATH = "./save/{}/".format(timestamp)                         
-    # PATH = "./save/only_loss_term/"                                ## !!!
-    os.makedirs(PATH, exist_ok=True)
-    print('Results will be saved in', PATH)
+    while True:
+        timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S") 
+        PATH = "./save/{}/".format(timestamp) 
+        try:
+            os.mkdir(PATH)
+            break
+        except:
+            pass
+    print("Results will be saved in:", PATH)
 
     # Save arguments for reproducibility
     fname = PATH+"args.json"
