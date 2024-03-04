@@ -17,7 +17,6 @@ from pacbayes import SamplesConvBound, approximate_BPAC_bound, bound_objective, 
 from loss import Scorer
 from models import MLPModel, CNNModel, flip_parameters_to_tensors, set_all_parameters
 from parsers import get_main_parser
-from utils import vec2params
 
 if __name__ == '__main__':
 
