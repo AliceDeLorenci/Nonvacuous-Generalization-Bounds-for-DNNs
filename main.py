@@ -29,6 +29,7 @@ if __name__ == '__main__':
     PATH = "./save/{}/".format(timestamp)                         
     # PATH = "./save/only_loss_term/"                                ## !!!
     os.makedirs(PATH, exist_ok=True)
+    print('Results will be saved in', PATH)
 
     # Save arguments for reproducibility
     fname = PATH+"args.json"
@@ -119,6 +120,7 @@ if __name__ == '__main__':
     # SAVE SGD PARAMETERS
     fname = PATH+"sgd_model.pt"
     torch.save(model.state_dict(), fname)
+
 
     # LOAD MODEL
     # fname = PATH+"sgd_model.pt"

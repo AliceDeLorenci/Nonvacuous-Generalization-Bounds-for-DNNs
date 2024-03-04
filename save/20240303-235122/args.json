@@ -10,13 +10,13 @@
     "batch_size": 100,
     "epochs": 20,
     "lr": 0.01,
-    "weight_decay": 0.0,
+    "weight_decay": 0.001,
     "lr2": 0.001,
     "sigma_init": 1.0,
     "T": 5000,
     "nb_snns": 200,
     "best_loss_patience": 1000,
-    "scheduler_patience": 50,
+    "scheduler": "onecycle",
     "warmup_pct": 0.1,
     "num_workers": 4
 }

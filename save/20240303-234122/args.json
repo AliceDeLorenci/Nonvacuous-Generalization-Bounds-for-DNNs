@@ -1,6 +1,6 @@
 {
     "nn_type": "mlp",
-    "nout": 1,
+    "nout": 10,
     "nlayers": 2,
     "nin_channels": 1,
     "kernel_size": 3,
@@ -8,7 +8,7 @@
     "nin": 784,
     "nhid": 600,
     "batch_size": 100,
-    "epochs": 20,
+    "epochs": 30,
     "lr": 0.01,
     "weight_decay": 0.0,
     "lr2": 0.001,
