@@ -23,11 +23,13 @@ if __name__ == '__main__':
 
     args = get_main_parser()
     print(args)
+    
+    WD = os.getcwd()
 
     # create timestamped (to avoid overwriting) to save results
     while True:
         timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S") 
-        PATH = "./save/{}/".format(timestamp) 
+        PATH = WD + "/save/{}/".format(timestamp) 
         try:
             os.mkdir(PATH)
             break
