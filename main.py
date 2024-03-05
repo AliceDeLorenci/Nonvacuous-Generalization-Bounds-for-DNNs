@@ -35,7 +35,7 @@ if __name__ == '__main__':
             break
         except Exception as e:
             print("Error:", e)
-            pass
+            break
     print("Results will be saved in:", PATH)
 
     # Save arguments for reproducibility
