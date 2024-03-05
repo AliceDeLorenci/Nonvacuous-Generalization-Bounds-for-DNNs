@@ -34,7 +34,6 @@ if __name__ == '__main__':
             os.mkdir(PATH)
             break
         except Exception as e:
-            print("Error:", e)
             break
     print("Results will be saved in:", PATH)
 
@@ -226,7 +225,7 @@ if __name__ == '__main__':
         count_iter+= 1
         if count_iter % print_every == 0:
             last_avg_loss = loss_ / print_every
-            print(t+1, '/', args.T, 'average loss:' , np.round(last_average_loss, decimals=4)
+            print(t+1, '/', args.T, 'average loss:' , np.round(last_avg_loss, decimals=4)
                 , 'best loss:', np.round(best_loss, decimals=4)
                 , '\n ellasped time', time.time() - time1) 
             loss_ = 0
@@ -321,7 +320,11 @@ if __name__ == '__main__':
 
     print('Results saved in', PATH)
     
-    save_dict = {'nlayers' : args.nlayers,
+    save_dict = {
+                'nn_type' : args.nn_type,
+                'nin' : args.nin,
+                'nout' : args.nout,
+                'nlayers' : args.nlayers,
                  'nhid' : args.nhid,
                  'nb_params' : number_of_parameters,
                  'train_error' : 1-train_acc,
@@ -335,11 +338,16 @@ if __name__ == '__main__':
                  'nn_train_loss' : train_loss,
                  'nn_test_loss' : test_loss,
                  'best_loss_second_loop' : best_loss,
-                 'last_avg_loss_second_loop' : last_avg_loss
+                 'last_avg_loss_second_loop' : last_avg_loss,
+                 'weight_decay' : args.weight_decay,
+                 'batch_size' : args.batch_size,
+                 'kernel_size' : args.kernel_size,
+                 'nin_channels' : args.nin_channels,
+                 'nfilters' : args.nfilters,
+                 
                  }
 
     df = pd.DataFrame.from_dict(save_dict, orient='index')
-    
     df.to_csv(PATH+'results.csv')
 
     fname = PATH+"results.txt"
