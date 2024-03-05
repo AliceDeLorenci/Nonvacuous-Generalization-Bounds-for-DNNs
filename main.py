@@ -5,6 +5,7 @@ import os
 from copy import deepcopy
 from tqdm import tqdm
 import json
+import pandas as pd
 
 import torch
 from torch import nn, optim
@@ -30,7 +31,8 @@ if __name__ == '__main__':
         try:
             os.mkdir(PATH)
             break
-        except:
+        except Exception as e:
+            print("Error:", e)
             pass
     print("Results will be saved in:", PATH)
 
@@ -99,6 +101,7 @@ if __name__ == '__main__':
             train_acc += scorer.accuracy(predictions, y.to(device)).item()
             
         train_acc = train_acc / len(train_loader)
+        train_loss = train_loss / len(train_loader)
         
         model.eval()
         test_loss = 0
@@ -114,10 +117,11 @@ if __name__ == '__main__':
             test_acc += scorer.accuracy(predictions, y.to(device)).item()
             
         test_acc = test_acc / len(test_loader)
+        test_loss = test_loss / len(test_loader)
         
         print('Epoch ', str(i+1)
-        , ' train loss:' , train_loss / len(train_loader)
-            , 'test loss', test_loss / len(test_loader))
+        , ' train loss:' , train_loss 
+            , 'test loss', test_loss )
         print('Train accuracy', train_acc, 'test accuracy', test_acc)
 
     # SAVE SGD PARAMETERS
@@ -219,7 +223,8 @@ if __name__ == '__main__':
         
         count_iter+= 1
         if count_iter % print_every == 0:
-            print(t+1, '/', args.T, 'average loss:' , np.round(loss_ / print_every, decimals=4)
+            last_avg_loss = loss_ / print_every
+            print(t+1, '/', args.T, 'average loss:' , np.round(last_average_loss, decimals=4)
                 , 'best loss:', np.round(best_loss, decimals=4)
                 , '\n ellasped time', time.time() - time1) 
             loss_ = 0
@@ -313,6 +318,27 @@ if __name__ == '__main__':
     print('PAC-Bayes bound', bound_2)
 
     print('Results saved in', PATH)
+    
+    save_dict = {'nlayers' : args.nlayers,
+                 'nhid' : args.nhid,
+                 'nb_params' : number_of_parameters,
+                 'train_error' : 1-train_acc,
+                 'test_error' : 1-test_acc,
+                 'snn_train_error' : snn_train_error,
+                 'snn_test_error' : np.mean(empirical_snn_test_errors_),
+                 'pb_bound_prev' : pb_bound_prev,
+                 'pb_bound' : bound_2,
+                 'delta_prime' : delta_prime,
+                 'delta' : delta,
+                 'nn_train_loss' : train_loss,
+                 'nn_test_loss' : test_loss,
+                 'best_loss_second_loop' : best_loss,
+                 'last_avg_loss_second_loop' : last_avg_loss
+                 }
+
+    df = pd.DataFrame.from_dict(save_dict, orient='index')
+    
+    df.to_csv(PATH+'results.csv')
 
     fname = PATH+"results.txt"
     with open(fname, 'w') as file:
