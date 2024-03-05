@@ -1,0 +1,1 @@
+insures the save folder doesn't get deleted if you remove all subfolders
