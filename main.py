@@ -322,6 +322,7 @@ if __name__ == '__main__':
     
     save_dict = {
                 'nn_type' : args.nn_type,
+                'dataset' : 'MNIST', # enventually change?
                 'nin' : args.nin,
                 'nout' : args.nout,
                 'nlayers' : args.nlayers,
@@ -339,12 +340,14 @@ if __name__ == '__main__':
                  'nn_test_loss' : test_loss,
                  'best_loss_second_loop' : best_loss,
                  'last_avg_loss_second_loop' : last_avg_loss,
+                 'nb_snns' : args.nb_snns,
+                 'sigma_init' : args.sigma_init,
+                 'nb_second_loop_iterations' : args.T, 
                  'weight_decay' : args.weight_decay,
                  'batch_size' : args.batch_size,
                  'kernel_size' : args.kernel_size,
                  'nin_channels' : args.nin_channels,
                  'nfilters' : args.nfilters,
-                 
                  }
 
     df = pd.DataFrame.from_dict(save_dict, orient='index')
