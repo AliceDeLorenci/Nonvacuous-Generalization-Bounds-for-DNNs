@@ -162,7 +162,9 @@ if __name__ == '__main__':
     optimizer_2 = optim.RMSprop(PB_params, lr=args.lr2)
 
     if args.scheduler == 'onecycle':
-        scheduler = optim.lr_scheduler.OneCycleLR(optimizer_2, max_lr=args.lr2, total_steps=args.T, pct_start=args.warmup_pct)
+        scheduler = optim.lr_scheduler.OneCycleLR(optimizer_2, max_lr=args.lr2
+                                                  , total_steps=args.T, pct_start=args.warmup_pct
+                                                  , final_div_factor=1e2)
 
     # Sample convergence delta (for MC approximation of e(Q,S))
     delta_prime = 0.01  
