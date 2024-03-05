@@ -172,7 +172,7 @@ if __name__ == '__main__':
                                                   , final_div_factor=1e2)
 
     # Sample convergence delta (for MC approximation of e(Q,S))
-    delta_prime = 0.01  
+    delta_prime = 0.01
 
     d = float(len(w))
     m = float(len(train_dataset))
@@ -308,6 +308,8 @@ if __name__ == '__main__':
 
     pb_bound_prev = bound_1 + min(B_plus, B_minus) 
 
+    # Second bound
+    delta = 0.025 # default value, defined in B_RE function
     bound_2 = approximate_BPAC_bound(1-bound_1, min(B_plus, B_minus) )
 
     number_of_parameters = len(w)                        
