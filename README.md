@@ -5,7 +5,8 @@
 | Experiments |  $600$  | $300^2$ | $600^2$ | $1200^2$ |  $600^3$  |
 |-------------|:-----------:|:-----:|:-----:|:-----:|:------:|
 | Train error |             |       |       |       |        |         
-| Test error  |             |       |       |       |        |         
+| Test error  |             |       |       |       |        |   
+| Validation error  |             |       |       |       |        |   
 | SNN train error |        |       |       |       |        |         
 | SNN test error |         |       |       |       |        |         
 | PAC-Bayes bound |        |       |       |       |        |         
@@ -16,7 +17,8 @@
 | Experiments |  $600$  | $300^2$ | $600^2$ | $1200^2$ |  $600^3$  |
 |-------------|:-----------:|:-----:|:-----:|:-----:|:------:|
 | Train error |             |       |       |       |        |         
-| Test error  |             |       |       |       |        |         
+| Test error  |             |       |       |       |        |  
+| Validation error  |             |       |       |       |        |   
 | SNN train error |        |       |       |       |        |         
 | SNN test error |         |       |       |       |        |         
 | PAC-Bayes bound |        |       |       |       |        |         
@@ -29,7 +31,8 @@
 | Experiments |  $600^2, \lambda=$  | $600^2, \lambda=$ | $600^2, \lambda=$ | $600^2, \lambda=$ |  $600^2, \lambda=$  |
 |-------------|:-----------:|:-----:|:-----:|:-----:|:------:|
 | Train error |             |       |       |       |        |         
-| Test error  |             |       |       |       |        |         
+| Test error  |             |       |       |       |        |  
+| Validation error  |             |       |       |       |        |   
 | SNN train error |        |       |       |       |        |         
 | SNN test error |         |       |       |       |        |         
 | PAC-Bayes bound |        |       |       |       |        |         
@@ -42,7 +45,8 @@
 | Experiments |  TODO  | TODO | TODO | TODO |  TODO  |
 |-------------|:-----------:|:-----:|:-----:|:-----:|:------:|
 | Train error |             |       |       |       |        |         
-| Test error  |             |       |       |       |        |         
+| Test error  |             |       |       |       |        |  
+| Validation error  |             |       |       |       |        |   
 | SNN train error |        |       |       |       |        |         
 | SNN test error |         |       |       |       |        |         
 | PAC-Bayes bound |        |       |       |       |        |         
