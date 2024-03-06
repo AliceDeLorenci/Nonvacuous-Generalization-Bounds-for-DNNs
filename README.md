@@ -1,5 +1,51 @@
 # Nonvacuous-Generalization-Bounds-for-DNNs
 
+### Reproducing the paper results
+
+| Experiments |  $600$  | $300^2$ | $600^2$ | $1200^2$ |  $600^3$  |
+|-------------|:-----------:|:-----:|:-----:|:-----:|:------:|
+| Train error |             |       |       |       |        |         
+| Test error  |             |       |       |       |        |         
+| SNN train error |        |       |       |       |        |         
+| SNN test error |         |       |       |       |        |         
+| PAC-Bayes bound |        |       |       |       |        |         
+| # parameters |           |       |       |       |        |         
+
+### Multiclass
+
+| Experiments |  $600$  | $300^2$ | $600^2$ | $1200^2$ |  $600^3$  |
+|-------------|:-----------:|:-----:|:-----:|:-----:|:------:|
+| Train error |             |       |       |       |        |         
+| Test error  |             |       |       |       |        |         
+| SNN train error |        |       |       |       |        |         
+| SNN test error |         |       |       |       |        |         
+| PAC-Bayes bound |        |       |       |       |        |         
+| # parameters |           |       |       |       |        |         
+
+### Weight decay
+
+| Experiments |  $600$  | $300^2$ | $600^2$ | $1200^2$ |  $600^3$  |
+|-------------|:-----------:|:-----:|:-----:|:-----:|:------:|
+| Train error |             |       |       |       |        |         
+| Test error  |             |       |       |       |        |         
+| SNN train error |        |       |       |       |        |         
+| SNN test error |         |       |       |       |        |         
+| PAC-Bayes bound |        |       |       |       |        |         
+| # parameters |           |       |       |       |        |         
+
+### Convolutional Neural Networks
+
+| Experiments |  TODO  | TODO | TODO | TODO |  TODO  |
+|-------------|:-----------:|:-----:|:-----:|:-----:|:------:|
+| Train error |             |       |       |       |        |         
+| Test error  |             |       |       |       |        |         
+| SNN train error |        |       |       |       |        |         
+| SNN test error |         |       |       |       |        |         
+| PAC-Bayes bound |        |       |       |       |        |         
+| # parameters |           |       |       |       |        |         
+
+### Preliminary results
+
 ${T-600^2}$ (same experiment as in the paper)
 
     Namespace(nn_type='mlp', nout=1, nlayers=2, nin_channels=1, kernel_size=3, nfilters=16, nin=784, nhid=600, batch_size=100, epochs=20, lr=0.01, weight_decay=0.0, lr2=0.001, sigma_init=1.0, T=5000, nb_snns=200, best_loss_patience=1000, scheduler='onecycle', warmup_pct=0.1, num_workers=4)
