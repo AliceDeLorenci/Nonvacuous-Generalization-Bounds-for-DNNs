@@ -24,7 +24,9 @@
 
 ### Weight decay
 
-| Experiments |  $600$  | $300^2$ | $600^2$ | $1200^2$ |  $600^3$  |
+- choose one architecture and vary weigth decay parameter
+
+| Experiments |  $600^2, \lambda=$  | $600^2, \lambda=$ | $600^2, \lambda=$ | $600^2, \lambda=$ |  $600^2, \lambda=$  |
 |-------------|:-----------:|:-----:|:-----:|:-----:|:------:|
 | Train error |             |       |       |       |        |         
 | Test error  |             |       |       |       |        |         
@@ -78,7 +80,7 @@ ${T-600^2}$ (weight decay ${10^{-3}}$)
     PAC-Bayes bound (before) 0.1862028275869163
     PAC-Bayes bound 0.13795737911536815
 
-${T-600^2}$ (weight decay ${10^{-3}}$)
+${T-600^2}$ (weight decay ${10^{-4}}$)
 
     Namespace(nn_type='mlp', nout=1, nlayers=2, nin_channels=1, kernel_size=3, nfilters=16, nin=784, nhid=600, batch_size=100, epochs=20, lr=0.01, weight_decay=0.0001, lr2=0.001, sigma_init=1.0, T=5000, nb_snns=200, best_loss_patience=1000, scheduler='onecycle', warmup_pct=0.1, num_workers=4)
 
