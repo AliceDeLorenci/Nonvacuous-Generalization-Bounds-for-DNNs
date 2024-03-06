@@ -9,6 +9,9 @@ import pandas as pd
 
 import torch
 from torch import nn, optim
+#import torch.nn
+#import torch.optim as optim
+
 from torch.utils.data import DataLoader
 from torchmetrics.classification import BinaryAccuracy 
 from torch.nn.utils import parameters_to_vector
@@ -58,9 +61,18 @@ if __name__ == '__main__':
     as_binary = True if args.nout == 1 else False
     train_dataset = BMNIST(root+'/train/', train=True, as_image=as_image, as_binary=as_binary, download=True) 
     test_dataset = BMNIST(root+'/test/', train=False, as_image=as_image, as_binary=as_binary, download=True)
+        # Split dataset into training and validation sets if use_validation is True
+    if args.use_validation:
+        train_size = int(0.8 * len(train_dataset))
+        val_size = len(train_dataset) - train_size
+        train_dataset, val_dataset = torch.utils.data.random_split(train_dataset, [train_size, val_size])
+    else:
+        val_dataset = None
 
+    # Create data loaders
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, pin_memory=True, num_workers=args.num_workers) 
     test_loader = DataLoader(test_dataset, batch_size=args.batch_size, pin_memory=True, num_workers=args.num_workers)
+    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, pin_memory=True, num_workers=args.num_workers) if args.use_validation else None
 
     # Scorer class (defines appropriate loss and accuracy)
     scorer = Scorer(args.nout, device)
@@ -104,6 +116,23 @@ if __name__ == '__main__':
         train_acc = train_acc / len(train_loader)
         train_loss = train_loss / len(train_loader)
         
+        if args.use_validation:  
+            val_loss = 0
+            val_acc = 0
+            for batch in val_loader:
+                x, y = batch
+
+                with torch.no_grad():
+                    predictions = model(x.to(device))
+                    current_loss = scorer.loss(predictions, y.to(device))
+                            
+                val_loss += current_loss.item()
+                val_acc += scorer.accuracy(predictions, y.to(device)).item()
+
+            val_acc = val_acc / len(val_loader)
+            val_loss = val_loss / len(val_loader)
+            print('Valid loss', val_loss, 'valid accuracy', val_acc)
+        
         model.eval()
         test_loss = 0
         test_acc = 0 
@@ -124,6 +153,7 @@ if __name__ == '__main__':
         , ' train loss:' , train_loss 
             , 'test loss', test_loss )
         print('Train accuracy', train_acc, 'test accuracy', test_acc)
+        
 
     # SAVE SGD PARAMETERS
     fname = PATH+"sgd_model.pt"
@@ -250,8 +280,7 @@ if __name__ == '__main__':
     rho_plus, rho_minus = quantize_lambda(rho, device)
 
     empirical_snn_train_errors_ = []
-    empirical_snn_test_errors_ = []
-
+    empirical_snn_val_errors_ = []
     #print('Differences between start and end of second loop, w, sigma, rho', torch.norm(w-w_old), torch.norm(sigma-sigma_old))
     #print('Difference before and after discretization of rho', torch.norm(rho-rho_old))
 
@@ -281,7 +310,7 @@ if __name__ == '__main__':
             
         train_accuracy = train_accuracy / len(train_loader.dataset) 
         empirical_snn_train_errors_ += [1- train_accuracy] 
-        
+
         # compute test accuracy
         for batch in test_loader:
             x, y = batch
@@ -294,7 +323,7 @@ if __name__ == '__main__':
 
         if i % print_every == 0:
             print(i , '/ ', args.nb_snns, 'Train error:', np.mean(empirical_snn_train_errors_), 'Test error', np.mean(empirical_snn_test_errors_))
-        
+            
     snn_train_error = np.mean(empirical_snn_train_errors_)
 
     ############################# PAC BAYES BOUND #############################
@@ -313,15 +342,12 @@ if __name__ == '__main__':
     bound_2 = approximate_BPAC_bound(1-bound_1, min(B_plus, B_minus) )
 
     number_of_parameters = len(w)                        
-
     print('Number of parameters:', number_of_parameters)
-    print('Train error:', 1-train_acc, 'Test error', 1-test_acc)
-    print('SNN train error', snn_train_error,  'SNN test error',  np.mean(empirical_snn_test_errors_) )
-    print('PAC-Bayes bound (before)', pb_bound_prev )
-    print('PAC-Bayes bound', bound_2)
-
+    print('Train error:', 1-train_acc, 'Test error:', 1-test_acc)
+    print('SNN train error:', snn_train_error, 'SNN test error:', np.mean(empirical_snn_test_errors_))
+    print('PAC-Bayes bound (before):', pb_bound_prev)
+    print('PAC-Bayes bound:', bound_2)
     print('Results saved in', PATH)
-    
     save_dict = {
                 'nn_type' : args.nn_type,
                 'dataset' : 'MNIST', # enventually change?
@@ -332,6 +358,7 @@ if __name__ == '__main__':
                  'nb_params' : number_of_parameters,
                  'train_error' : 1-train_acc,
                  'test_error' : 1-test_acc,
+                 'val_error' : 1-val_acc,
                  'snn_train_error' : snn_train_error,
                  'snn_test_error' : np.mean(empirical_snn_test_errors_),
                  'pb_bound_prev' : pb_bound_prev,
@@ -340,6 +367,7 @@ if __name__ == '__main__':
                  'delta' : delta,
                  'nn_train_loss' : train_loss,
                  'nn_test_loss' : test_loss,
+                 'nn_val_loss' : val_loss,
                  'best_loss_second_loop' : best_loss,
                  'last_avg_loss_second_loop' : last_avg_loss,
                  'nb_snns' : args.nb_snns,
@@ -358,7 +386,7 @@ if __name__ == '__main__':
     fname = PATH+"results.txt"
     with open(fname, 'w') as file:
         file.write('Number of parameters ' + str(number_of_parameters) + '\n')
-        file.write('Train error: ' + str(1-train_acc) + ' Test error ' + str(1-test_acc) + '\n')
-        file.write('SNN train error ' + str(snn_train_error) + ' SNN test error ' + str(np.mean(empirical_snn_test_errors_)) + '\n')
-        file.write('PAC-Bayes bound (before) ' + str(pb_bound_prev) + '\n')
-        file.write('PAC-Bayes bound ' + str(bound_2) + '\n')
+        file.write('Train error: ' + str(1-train_acc) + ' Test error: ' + str(1-test_acc) + '\n')
+        file.write('SNN train error: ' + str(snn_train_error) + ' SNN test error: ' + str(np.mean(empirical_snn_test_errors_)) + '\n')
+        file.write('PAC-Bayes bound (before): ' + str(pb_bound_prev) + '\n')
+        file.write('PAC-Bayes bound: ' + str(bound_2) + '\n')

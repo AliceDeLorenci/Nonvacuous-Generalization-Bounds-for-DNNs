@@ -36,6 +36,6 @@ def get_main_parser():
     parser.add_argument('--warmup_pct', type=float, default=0.1, help='Percentage of iterations to warm up')
     
     parser.add_argument('--num_workers', type=int, default=4, help='Number of workers')
-    
+    parser.add_argument('--use_validation', action='store_true', help='Use validation set during training')
     
     return parser.parse_args() 

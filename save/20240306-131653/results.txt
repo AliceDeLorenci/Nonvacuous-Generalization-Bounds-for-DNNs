@@ -1,0 +1,7 @@
+Number of parameters 1192801
+Train error: 0.00654166067639983 Test error: 0.019499993324279763
+SNN train error: 0.016823739402617013 SNN test error: 0.025364994484186176
+Valid error: 0.02074998964866004
+SNN valid error: 1.0
+PAC-Bayes bound (before): 0.14951681142329357
+PAC-Bayes bound: 0.10399247694101768
