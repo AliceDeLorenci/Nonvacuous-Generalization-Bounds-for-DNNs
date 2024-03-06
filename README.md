@@ -35,6 +35,8 @@
 
 ### Convolutional Neural Networks
 
+- use the same number of layers and choose kernels to match activation sizes?
+
 | Experiments |  TODO  | TODO | TODO | TODO |  TODO  |
 |-------------|:-----------:|:-----:|:-----:|:-----:|:------:|
 | Train error |             |       |       |       |        |         
