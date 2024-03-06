@@ -78,50 +78,56 @@ if __name__ == "__main__":
     # The random initialization will be used for the prior
     w0 = parameters_to_vector(model.parameters()).to(device)
 
-    print('Starting initial network training by SGD')
-    for i in tqdm(range(args.epochs)):
-        model.train()
-        train_loss = 0
-        train_acc = 0 
-        for batch in train_loader:
-            x, y = batch
-            optimizer.zero_grad()
+    for round in range(args.pruning_rounds):
+        if round > 0:
+            model = get_model()
 
-            predictions = model(x.to(device))
-            current_loss = scorer.loss(predictions, y.to(device))
+            # code MP step 
+            
+            # apply mask to the model
 
-            current_loss.backward()
-            optimizer.step()
-        
-            train_loss += current_loss.item()
-            train_acc += scorer.accuracy(predictions, y.to(device)).item()
-            
-        train_acc = train_acc / len(train_loader)
-        
-        model.eval()
-        test_loss = 0
-        test_acc = 0 
-        for batch in test_loader:
-            x, y = batch
-            
-            with torch.no_grad():
+        for i in tqdm(range(args.epochs)):
+            model.train()
+            train_loss = 0
+            train_acc = 0 
+            for batch in train_loader:
+                x, y = batch
+                optimizer.zero_grad()
+
                 predictions = model(x.to(device))
                 current_loss = scorer.loss(predictions, y.to(device))
 
-            test_loss += current_loss.item()
-            test_acc += scorer.accuracy(predictions, y.to(device)).item()
+                current_loss.backward()
+                optimizer.step()
             
-        test_acc = test_acc / len(test_loader)
-        
-        print('Epoch ', str(i+1)
-        , ' train loss:' , train_loss / len(train_loader)
-            , 'test loss', test_loss / len(test_loader))
-        print('Train accuracy', train_acc, 'test accuracy', test_acc)
+                train_loss += current_loss.item()
+                train_acc += scorer.accuracy(predictions, y.to(device)).item()
+                
+            train_acc = train_acc / len(train_loader)
+            
+            model.eval()
+            test_loss = 0
+            test_acc = 0 
+            for batch in test_loader:
+                x, y = batch
+                
+                with torch.no_grad():
+                    predictions = model(x.to(device))
+                    current_loss = scorer.loss(predictions, y.to(device))
+
+                test_loss += current_loss.item()
+                test_acc += scorer.accuracy(predictions, y.to(device)).item()
+                
+            test_acc = test_acc / len(test_loader)
+            
+            print('Epoch ', str(i+1)
+            , ' train loss:' , train_loss / len(train_loader)
+                , 'test loss', test_loss / len(test_loader))
+            print('Train accuracy', train_acc, 'test accuracy', test_acc)
 
     # SAVE SGD PARAMETERS
-    fname = PATH+"sgd_model.pt"
-    torch.save(model.state_dict(), fname)
-
+    # save model 
+    
     # LOAD MODEL
     # fname = PATH+"sgd_model.pt"
     # model.load_state_dict(torch.load(fname))
