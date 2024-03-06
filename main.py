@@ -349,30 +349,35 @@ if __name__ == '__main__':
     print('PAC-Bayes bound:', bound_2)
     print('Results saved in', PATH)
     save_dict = {
+
                 'nn_type' : args.nn_type,
                 'dataset' : 'MNIST', # enventually change?
+            # Architecture
                 'nin' : args.nin,
                 'nout' : args.nout,
                 'nlayers' : args.nlayers,
                  'nhid' : args.nhid,
                  'nb_params' : number_of_parameters,
+            # First loop
                  'train_error' : 1-train_acc,
                  'test_error' : 1-test_acc,
                  'val_error' : 1-val_acc,
+                 'nn_train_loss' : train_loss,
+                 'nn_test_loss' : test_loss,
+                 'nn_val_loss' : val_loss,
+            # Second loop
                  'snn_train_error' : snn_train_error,
                  'snn_test_error' : np.mean(empirical_snn_test_errors_),
                  'pb_bound_prev' : pb_bound_prev,
                  'pb_bound' : bound_2,
                  'delta_prime' : delta_prime,
                  'delta' : delta,
-                 'nn_train_loss' : train_loss,
-                 'nn_test_loss' : test_loss,
-                 'nn_val_loss' : val_loss,
-                 'best_loss_second_loop' : best_loss,
+                  'best_loss_second_loop' : best_loss,
                  'last_avg_loss_second_loop' : last_avg_loss,
                  'nb_snns' : args.nb_snns,
                  'sigma_init' : args.sigma_init,
                  'nb_second_loop_iterations' : args.T, 
+            # Hyperparameters
                  'weight_decay' : args.weight_decay,
                  'batch_size' : args.batch_size,
                  'kernel_size' : args.kernel_size,
