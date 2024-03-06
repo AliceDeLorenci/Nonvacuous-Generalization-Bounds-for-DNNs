@@ -280,6 +280,7 @@ if __name__ == '__main__':
     rho_plus, rho_minus = quantize_lambda(rho, device)
 
     empirical_snn_train_errors_ = []
+    empirical_snn_test_errors_ = []
     empirical_snn_val_errors_ = []
     #print('Differences between start and end of second loop, w, sigma, rho', torch.norm(w-w_old), torch.norm(sigma-sigma_old))
     #print('Difference before and after discretization of rho', torch.norm(rho-rho_old))
