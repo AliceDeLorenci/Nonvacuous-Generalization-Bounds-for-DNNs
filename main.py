@@ -194,7 +194,7 @@ if __name__ == '__main__':
     PB_params = nn.ParameterList([w, rho, sigma])
 
     # Define the optimizer to update w, rho, and sigma
-    optimizer_2 = optim.RMSprop(PB_params, lr=args.lr2)
+    optimizer_2 = optim.RMSprop(PB_params, lr=args.lr2, weight_decay=args.weight_decay)
 
     if args.scheduler == 'onecycle':
         scheduler = optim.lr_scheduler.OneCycleLR(optimizer_2, max_lr=args.lr2
@@ -350,7 +350,6 @@ if __name__ == '__main__':
     print('PAC-Bayes bound:', bound_2)
     print('Results saved in', PATH)
     save_dict = {
-
                 'nn_type' : args.nn_type,
                 'dataset' : 'MNIST', # enventually change?
             # Architecture
@@ -373,7 +372,7 @@ if __name__ == '__main__':
                  'pb_bound' : bound_2,
                  'delta_prime' : delta_prime,
                  'delta' : delta,
-                  'best_loss_second_loop' : best_loss,
+                 'best_loss_second_loop' : best_loss,
                  'last_avg_loss_second_loop' : last_avg_loss,
                  'nb_snns' : args.nb_snns,
                  'sigma_init' : args.sigma_init,
