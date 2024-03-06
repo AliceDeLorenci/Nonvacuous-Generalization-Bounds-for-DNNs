@@ -2,33 +2,33 @@
 
 ### Reproducing the paper results
 
-| Experiments |  $600$  | $300^2$ | $600^2$ | $1200^2$ |  $600^3$  |
-|-------------|:-----------:|:-----:|:-----:|:-----:|:------:|
-| Train error |             |       |       |       |        |         
-| Test error  |             |       |       |       |        |   
-| Validation error  |             |       |       |       |        |   
-| SNN train error |        |       |       |       |        |         
-| SNN test error |         |       |       |       |        |         
-| PAC-Bayes bound |        |       |       |       |        |         
-| # parameters |           |       |       |       |        |         
+| Experiments |  $600$  |  $1200$  | $300^2$ | $600^2$ | $1200^2$ |  $600^3$  |
+|-------------|:-----------:|:-----:|:-----:|:-----:|:------:|:------:|
+| Train error |             |       |       |       |       |        |         
+| Test error  |             |       |       |       |       |        |   
+| Validation error  |             |       |       |       |       |        |   
+| SNN train error |        |       |       |       |       |        |         
+| SNN test error |         |       |       |       |       |        |         
+| PAC-Bayes bound |        |       |       |       |       |        |         
+| # parameters |           |       |       |       |       |        |         
 
 ### Multiclass
 
-| Experiments |  $600$  | $300^2$ | $600^2$ | $1200^2$ |  $600^3$  |
-|-------------|:-----------:|:-----:|:-----:|:-----:|:------:|
-| Train error |             |       |       |       |        |         
-| Test error  |             |       |       |       |        |  
-| Validation error  |             |       |       |       |        |   
-| SNN train error |        |       |       |       |        |         
-| SNN test error |         |       |       |       |        |         
-| PAC-Bayes bound |        |       |       |       |        |         
-| # parameters |           |       |       |       |        |         
+| Experiments |  $600$  |  $1200$  | $300^2$ | $600^2$ | $1200^2$ |  $600^3$  |
+|-------------|:-----------:|:-----:|:-----:|:-----:|:------:|:------:|
+| Train error |             |       |       |       |       |        |         
+| Test error  |             |       |       |       |       |        |  
+| Validation error  |             |       |       |       |       |        |   
+| SNN train error |        |       |       |       |       |        |         
+| SNN test error |         |       |       |       |       |        |         
+| PAC-Bayes bound |        |       |       |       |       |        |         
+| # parameters |           |       |       |       |       |        |         
 
 ### Weight decay
 
 - choose one architecture and vary weigth decay parameter
 
-| Experiments |  $600^2, \lambda=$  | $600^2, \lambda=$ | $600^2, \lambda=$ | $600^2, \lambda=$ |  $600^2, \lambda=$  |
+| Experiments |  $600^2, \lambda=$ | $600^2, \lambda=$ | $600^2, \lambda=$ | $600^2, \lambda=$ |  $600^2, \lambda=$  |
 |-------------|:-----------:|:-----:|:-----:|:-----:|:------:|
 | Train error |             |       |       |       |        |         
 | Test error  |             |       |       |       |        |  
