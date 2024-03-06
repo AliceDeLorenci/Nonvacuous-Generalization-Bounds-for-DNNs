@@ -352,7 +352,7 @@ if __name__ == '__main__':
                  'nfilters' : args.nfilters,
                  }
 
-    df = pd.DataFrame.from_dict(save_dict, orient='index')
+    df = pd.DataFrame.from_dict(save_dict, orient='columns')
     df.to_csv(PATH+'results.csv')
 
     fname = PATH+"results.txt"
