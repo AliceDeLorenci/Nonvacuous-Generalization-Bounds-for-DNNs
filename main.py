@@ -36,8 +36,8 @@ if __name__ == '__main__':
         try:
             os.mkdir(PATH)
             break
-        except Exception as e:
-            break
+        except:
+            continue # if two experiments are launched simultaneously the timestamps will collide, so generate new timestamp
     print("Results will be saved in:", PATH)
 
     # Save arguments for reproducibility
