@@ -40,7 +40,7 @@
 
 - use the same number of layers and choose kernels to match activation sizes?
 
-| Experiments |  TODO  | TODO | TODO | TODO |  TODO  |
+| Experiments |  TODO  | TODO | TODO | 64 |  TODO  |
 |-------------|:-----------:|:-----:|:-----:|:-----:|:------:|
 | Train error |             |       |       |       |        |         
 | Test error  |             |       |       |       |        |  
@@ -48,7 +48,7 @@
 | SNN train error |        |       |       |       |        |         
 | SNN test error |         |       |       |       |        |         
 | PAC-Bayes bound |        |       |       |       |        |         
-| # parameters |           |       |       |       |        |         
+| # parameters |           |       | 1242561   |       |        |         
 
 ### Preliminary results
 
