@@ -194,7 +194,9 @@ if __name__ == '__main__':
     PB_params = nn.ParameterList([w, rho, sigma])
 
     # Define the optimizer to update w, rho, and sigma
-    optimizer_2 = optim.RMSprop(PB_params, lr=args.lr2, )#weight_decay=args.weight_decay)
+    optimizer_2 = optim.RMSprop([{'params': w, 'weight_decay':args.weight_decay},
+                                {'params': rho, 'weight_decay': 0},
+                                {'params': sigma, 'weight_decay': 0}], lr=args.lr2)
 
     if args.scheduler == 'onecycle':
         scheduler = optim.lr_scheduler.OneCycleLR(optimizer_2, max_lr=args.lr2
