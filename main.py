@@ -385,6 +385,8 @@ if __name__ == '__main__':
                  'nfilters' : args.nfilters,
                  }
 
+    save_dict = {key: [value] for key, value in save_dict.items()}
+
     df = pd.DataFrame.from_dict(save_dict, orient='columns')
     df.to_csv(PATH+'results.csv')
 
