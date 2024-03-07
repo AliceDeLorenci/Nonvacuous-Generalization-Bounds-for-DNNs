@@ -363,10 +363,10 @@ if __name__ == '__main__':
             # First loop
                  'train_error' : 1-train_acc,
                  'test_error' : 1-test_acc,
-                 'val_error' : 1-val_acc,
+                 #'val_error' : 1-val_acc,
                  'nn_train_loss' : train_loss,
                  'nn_test_loss' : test_loss,
-                 'nn_val_loss' : val_loss,
+                 #'nn_val_loss' : val_loss,
             # Second loop
                  'snn_train_error' : snn_train_error,
                  'snn_test_error' : np.mean(empirical_snn_test_errors_),
