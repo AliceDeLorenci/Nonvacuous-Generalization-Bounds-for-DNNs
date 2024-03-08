@@ -49,6 +49,19 @@
 | PAC-Bayes bound |   0.180     |   0.173    |    0.113   |    0.103   |        |        | 
 | # parameters |    117397     |    317537     | 20641 |     99841   |  3947329       |  1589665    |   
 
+### Convolutional Neural Networks (MULTICLASS)
+
+- use the same number of layers and choose kernels to match activation sizes?
+
+| Experiments |  12  | 32 | 24^2 | 64^2 |  192^2  | 216^3
+|-------------|:-----------:|:-----:|:-----:|:-----:|:------:|:------:|
+| Train error |   0.025         | 0.122     |   0.025     |   0.024   |        |   |      
+| Test error  |    0.023        |   0.119    |   0.023    |     0.023  |        |  |
+| SNN train error |   0.038     | 0.055      |    0.038    |   0.034   |        |       |  
+| SNN test error |     0.035    |   0.053    |     0.035   |   0.032    |       |       |  
+| PAC-Bayes bound |   0.180     |   0.130    |    0.113   |    0.124   |        |        | 
+| # parameters |    117397     |    317537     | 20641 |     103306  |  3947329       |  1589665    |   
+
 ### Preliminary results
 
 ${T-600^2}$ (same experiment as in the paper)
