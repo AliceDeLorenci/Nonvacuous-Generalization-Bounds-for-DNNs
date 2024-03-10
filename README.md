@@ -38,9 +38,17 @@
 
 ### Convolutional Neural Networks
 
+Problem with multi-layer CNNs and why we cannot compare with MLPs in all parameters:
+
+*Explanation:* Although the number of parameters might be lower than in MLPs, deeper networks CNN (>1 layers in this case) require more computational resources due to the increased number of operations performed per layer. That is during training, the network needs to store intermediate values and gradients for backpropagation. With more layers, the computational graph becomes deeper, requiring more memory to store gradients and intermediate values.
+
+
+
+- The objective is to compare the Pac Bayes Bounds across shallow and deeper CNN architectures with matching parameters, alongside an almost matching-parameter MLP counterpart (CNN 1-layer 32 ->  MLP  2 layer 300, etc.). Specifically, we aim to assess the performance trade-offs between model complexity and generalization capacity for CNNs within the binary and multiclass setting.
+
 - use the same number of layers and choose kernels to match activation sizes?
 
-|  Experiments       | 12    | 32    | 64    | 64^2  | 128^2 | 128   |
+|  Experiments       |$12$    |$32$   |$64$    | $64^2$  | $128^2$ | $128$   |
 |---------|-------|-------|-------|-------|-------|-------|
 | Train error | 0.028 | 0.020 | 0.016 | 0.010 | 0.008 | 0.013 |
 | Test error  | 0.033 | 0.033 | 0.024 | 0.016 | 0.012 | 0.028 |
@@ -53,7 +61,7 @@
 
 - use the same number of layers and choose kernels to match activation sizes?
 
-| Experiments        | 12    | 32    | 64    | 64^2  | 128^2 | 128   |
+| Experiments        | $12$    | $32$    | $64$    | $64^2$  | $128^2$ | $128$   |
 |---------|-------|-------|-------|-------|-------|-------|
 | Train error | 0.025 | 0.018 | 0.015 | 0.024 | 0.015 | 0.013 |
 | Test error  | 0.023 | 0.020 | 0.016 | 0.023 | 0.020 | 0.018 |
