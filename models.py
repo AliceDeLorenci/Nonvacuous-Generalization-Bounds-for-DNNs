@@ -138,7 +138,7 @@ class MLPModel(nn.Module):
         # Define layers
         self.layers.append(nn.Linear(nin, nhid)) #input layer
 
-        for i in range(nlayers): #hidden layers
+        for i in range(nlayers-1): #hidden layers
             self.layers.append(nn.Linear(nhid, nhid))
 
         self.layers.append(nn.Linear(nhid, nout)) #output layer
