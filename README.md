@@ -38,17 +38,37 @@
 
 ### Convolutional Neural Networks
 
+Problem with multi-layer CNNs and why we cannot compare with MLPs in all parameters:
+
+*Explanation:* Although the number of parameters might be lower than in MLPs, deeper networks CNN (>1 layers in this case) require more computational resources due to the increased number of operations performed per layer. That is during training, the network needs to store intermediate values and gradients for backpropagation. With more layers, the computational graph becomes deeper, requiring more memory to store gradients and intermediate values.
+
+
+
+- The objective is to compare the Pac Bayes Bounds across shallow and deeper CNN architectures with matching parameters, alongside an almost matching-parameter MLP counterpart (CNN 1-layer 32 ->  MLP  2 layer 300, etc.). Specifically, we aim to assess the performance trade-offs between model complexity and generalization capacity for CNNs within the binary and multiclass setting.
+
 - use the same number of layers and choose kernels to match activation sizes?
 
-| Experiments |  12  | 32 | 24^2 | 64^2 |  192^2  | 216^3
-|-------------|:-----------:|:-----:|:-----:|:-----:|:------:|:------:|
-| Train error |             |       |       |       |        |   |      
-| Test error  |             |       |       |       |        |  |
-| Validation error  |             |       |       |       |        |   |
-| SNN train error |        |       |       |       |        |       |  
-| SNN test error |         |       |       |       |        |       |  
-| PAC-Bayes bound |        |       |       |       |        |        | 
-| # parameters |    904057     |    2409537     |  457801|     1242561   |  3947329       |  1589665    |   
+|  Experiments       |$12$    |$32$   |$64$    | $128$   | $64^2$  | $128^2$ |
+|---------|-------|-------|-------|-------|-------|-------|
+| Train error | 0.028 | 0.020 | 0.016 | 0.013 | 0.010 | 0.008 |
+| Test error  | 0.033 | 0.033 | 0.024 | 0.028 | 0.016 | 0.012 |
+| SNN train error | 0.040 | 0.055 | 0.033 | 0.029 | 0.024 | 0.038 |
+| SNN test error  | 0.042 | 0.054 | 0.036 | 0.031 | 0.026 | 0.038 |
+| PB          | 0.118 | 0.127 | 0.114 | 0.122 | 0.103 | 0.140 |
+| Params      | 117397| 317537| 652737| 1378433| 99841 | 346369|
+
+### Convolutional Neural Networks (MULTICLASS)
+
+- use the same number of layers and choose kernels to match activation sizes?
+
+| Experiments        | $12$    | $32$    | $64$    | $128$   | $64^2$  | $128^2$ |
+|---------|-------|-------|-------|-------|-------|-------|
+| Train error | 0.025 | 0.018 | 0.015 |0.013 | 0.024 | 0.015 | 
+| Test error  | 0.023 | 0.020 | 0.016 |0.018 | 0.023 | 0.020 | 
+| SNN train error | 0.038 | 0.031 | 0.025 | 0.022 | 0.034 | 0.023 |
+| SNN test error  | 0.035 | 0.029 | 0.025 |  0.022 |0.032 | 0.023 |
+| PB          | 0.115 | 0.114 | 0.106 | 0.107 | 0.124 | 0.119 |
+| Params      | 120862| 321002| 656202|1381898| 103306 | 349834| 
 
 ### Preliminary results
 
