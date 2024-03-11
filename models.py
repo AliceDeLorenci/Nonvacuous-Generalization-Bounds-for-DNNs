@@ -38,7 +38,7 @@ def set_all_parameters(module, theta):
 
 class CNNModel(nn.Module):
     def __init__(self, nin_channels, nout, 
-                 nlayers, kernel_size, nfilters, stride=1, padding=2, padding_mode='zeros', 
+                 nlayers, kernel_size, nfilters, stride=1, padding=0, padding_mode='zeros', 
                  pool_kernel_size=2, pool_stride=2, 
                  nrow=28, ncol=28):
         super(CNNModel, self).__init__()
@@ -78,10 +78,10 @@ class CNNModel(nn.Module):
         
         fc_input_channels, fc_input_nrow, fc_input_ncol = self.compute_fc_input_dim(nrow, ncol)
 
-        self.outlayer1 = nn.Linear(fc_input_channels*fc_input_nrow*fc_input_ncol, 384)
-        self.outlayer2 = nn.Linear(384, nout)# output layer
+        self.outlayer = nn.Linear(fc_input_channels*fc_input_nrow*fc_input_ncol, nout) # output layer
+
         # Initialize weights and biases
-        for layer in self.convlayers + [self.outlayer1, self.outlayer2]:
+        for layer in self.convlayers + [self.outlayer]:
             nn.init.trunc_normal_(layer.weight, mean=mu_init, std=sigma_init, a=-2*sigma_init, b=2*sigma_init)
             nn.init.constant_(layer.bias, 0)
 
@@ -93,8 +93,7 @@ class CNNModel(nn.Module):
             x = poollayer(x)
 
         x = x.view(x.size(0), -1)
-        x = self.outlayer1(x)
-        x = self.outlayer2(x)
+        x = self.outlayer(x)
         return self.output_activation(x)
 
     def compute_fc_input_dim(self, nrow=28, ncol=28):
