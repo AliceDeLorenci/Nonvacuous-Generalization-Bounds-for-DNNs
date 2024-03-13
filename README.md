@@ -1,4 +1,59 @@
-# Nonvacuous-Generalization-Bounds-for-DNNs**
+# Nonvacuous-Generalization-Bounds-for-DNNs
+
+This repository contains a PyTorch implementation of the PAC-Bayes bound optimization algorithm introduced by the paper:
+
+> Gintare Karolina Dziugaite and Daniel M. Roy. *Computing nonvacuous generalization bounds for deep (stochastic) neural networks with many more parameters than training data.* In Proceedings of the 33rd Annual Conference on Uncertainty in Artificial Intelligence (UAI), 2017.
+
+In order to run the code, the following packages, listed on `requirements.txt`must be installed:
+```
+torch
+torchvision
+torchmetrics
+matplotlib
+tqdm
+numpy
+pandas
+```
+
+Run the code with:
+```bash
+python3 main.py
+```
+
+Detailed information on command line options can be obtained with:
+```bash
+python3 main.py -h
+```
+
+Essentially, the following parameters may be specified:
+- `--nn_type`: type of neural network to use
+- `--nout`: number of outputs
+- `--nlayers`: number of hidden layers in the networks
+- `--nin_channels`: number of input channels (when using CNNs)
+- `--kernel_size`: size of the convolutional kernel (when using CNNs)
+- `--nfilters`: number of filters in the convolutional layers (when using CNNs)
+- `--nin`: input dimension
+- `--nhid`: number of hidden units in a hidden layer (when using FCNs)
+- `--batch_size`: batch size for SGD optimization
+- `--epochs`: number of epochs for SGD optimization
+- `--lr`: learning rate for SGD optimization
+- `--weight_decay`: weight decay for SGD optimization
+- `--lr2`: learning rate for PAC-Bayes bound optimization
+- `--sigma_init`: scaling to apply to the initial value of s for PAC-Bayes bound optimization
+- `--T`: mumber of iterations for PAC-Bayes bound optimization
+- `--nb_snns`: number of SNNs to sample for MC approximation
+- `--best_loss_patience`: patience of 2nd loop best loss
+- `--scheduler`: scheduler for the learning rate for PAC-Bayes bound optimization
+- `--warmup_pct`: percentage of iterations to warm up for PAC-Bayes bound optimization
+- `--use_validation`: whether to use validation set during training
+    
+
+All execution artifacts are stored in a timestamped subdirectory inside the `save` directory, they include:
+- NN model trained with SGD (`sgd_model.pt`)
+- SNN parameters resulting from the optimization of the PAC-Bayes bound (`snn_model_parameters.npz`)
+- Train and test errors for the NN model trained with SGD and the SNN, as well as the PAC-Bayes bound (`results.txt`)
+
+---
 
 The initial SGD training was carried out over ${20}$ epochs, using a batch size of ${100}$, learning rate ${\gamma = 0.01}$ and a ${\mu=0.9}$ momentum factor. Meanwhile, the optimization of the PAC-Bayes bound was carried out over ${1000}-2000$ epochs, using the RMSprop algorithm and a single cycle cosine learning rate schedule, with max learning rate of ${0.001}$ and 
 $5\%$ of warmup epochs. As in the original paper, we use $\delta= 0.025, \delta'=0.01, b =100, c= 0.1$. Finally, we used ${n=200}$ samples of ${Q}$ to compute the Monte Carlo approximation $\hat Q_n$.
