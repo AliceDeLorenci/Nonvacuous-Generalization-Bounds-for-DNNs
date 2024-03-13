@@ -91,7 +91,7 @@ Although CNNs generally have fewer parameters than MLPs, deeper networks (\(l>1\
 
 ### Convolutional Neural Networks
 
-The objective is to compare the Pac Bayes Bounds across shallow and deeper CNN architectures with matching parameters, alongside an almost matching-parameter MLP counterpart (CNN 1-layer 32 ->  MLP  2 layer 300, etc.). Specifically, we aim to assess the performance trade-offs between model complexity and generalization capacity for CNNs within the binary and multiclass setting.
+The objective is to compare the Pac Bayes Bounds across shallow and deeper CNN architectures with matching parameters, alongside an almost matching-parameter MLP counterpart. Specifically, we aim to assess the performance trade-offs between model complexity and generalization capacity for CNNs within the binary and multiclass setting.
 
 
 |  Experiments       |$12$    |$32$   |$64$    | $128$   | $64^2$  | $128^2$ |
