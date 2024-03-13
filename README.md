@@ -3,7 +3,7 @@
 The initial SGD training was carried out over ${20}$ epochs, using a batch size of ${100}$, learning rate ${\gamma = 0.01}$ and a ${\mu=0.9}$ momentum factor. Meanwhile, the optimization of the PAC-Bayes bound was carried out over ${1000}-2000$ epochs, using the RMSprop algorithm and a single cycle cosine learning rate schedule, with max learning rate of ${0.001}$ and 
 $5\%$ of warmup epochs. As in the original paper, we use $\delta= 0.025, \delta'=0.01, b =100, c= 0.1$. Finally, we used ${n=200}$ samples of ${Q}$ to compute the Monte Carlo approximation $\hat Q_n$.
 
-As previously mentioned, the mean ${w}$ of the posterior ${Q}$ is initialized using the neural network trained by SGD, while the diagonal ${s}$ of the covariance matrix ${\operatorname{diag}(s)}$ is initialized to ${|w|}$ and ${\lambda}$ is initialized as ${e^{-6}}$. The prior mean is fixed to a randomly sampled ${w_0}$.
+As previously mentioned, the mean ${w}$ of the posterior ${Q}$ is initialized using the neural network trained by SGD, while the diagonal ${s}$ of the covariance matrix ${\text{diag}(s)}$ is initialized to ${|w|}$ and ${\lambda}$ is initialized as ${e^{-6}}$. The prior mean is fixed to a randomly sampled ${w_0}$.
 
 For training Convolutional Neural Networks (CNNs), we employed zero padding, and \(3 \times 3\) convolutional filters, $k$. Moreover, we integrated two linear layers with $384$ neurons serving as intermediate fully connected neurons. The decision regarding the number of convolutional layers, $l$, and the number of filters, $k$, was guided by our intention to match the number of parameters with those of Multi-Layer Perceptrons (MLPs).
 
