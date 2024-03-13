@@ -1,5 +1,15 @@
 # Nonvacuous-Generalization-Bounds-for-DNNs**
 
+The initial SGD training was carried out over ${20}$ epochs, using a batch size of ${100}$, learning rate ${\gamma = 0.01}$ and a ${\mu=0.9}$ momentum factor. Meanwhile, the optimization of the PAC-Bayes bound was carried out over ${1000}-2000$ epochs, using the RMSprop algorithm and a single cycle cosine learning rate schedule, with max learning rate of ${0.001}$ and 
+$5\%$ of warmup epochs. As in \cite{DR17}, we use $\delta= 0.025, \delta'=0.01, b =100, c= 0.1$. Finally, we used ${n=200}$ samples of ${Q}$ to compute the Monte Carlo approximation $\hat Q_n$.
+
+As previously mentioned, the mean ${w}$ of the posterior ${Q}$ is initialized using the neural network trained by SGD, while the diagonal ${s}$ of the covariance matrix ${\operatorname{diag}(s)}$ is initialized to ${|w|}$ and ${\lambda}$ is initialized as ${e^{-6}}$. The prior mean is fixed to a randomly sampled ${w_0}$.
+
+For training Convolutional Neural Networks (CNNs), we employed zero padding, and \(3 \times 3\) convolutional filters, $k$. Moreover, we integrated two linear layers with $384$ neurons serving as intermediate fully connected neurons. The decision regarding the number of convolutional layers, $l$, and the number of filters, $k$, was guided by our intention to match the number of parameters with those of Multi-Layer Perceptrons (MLPs).
+
+Although CNNs generally have fewer parameters than MLPs, deeper networks (\(l>1\) in this case) require more computational resources due to the increased number of operations per layer. This is because during training, the network must store intermediate values and gradients for backpropagation. In essence, as the number of layers increases, the computational graph becomes deeper, necessitating more memory. Considering this, we opt for a specific choice of filter sizes: \(k = \{12, 32, 64, 128\}_{l=1}\) and \(k = \{64, 128\}_{l=2}\).
+
+
 ### Reproducing the paper results
 
 | Experiments | $600$ | $1200$ |$300^2$   | $600^2$  |  $1200^2$  | $300^3$ | $600^3$ | $1200^3$ |  $600^4$  |
