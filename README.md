@@ -67,7 +67,7 @@ For training Convolutional Neural Networks (CNNs), we employed zero padding, and
 Although CNNs generally have fewer parameters than MLPs, deeper networks (\(l>1\) in this case) require more computational resources due to the increased number of operations per layer. This is because during training, the network must store intermediate values and gradients for backpropagation. In essence, as the number of layers increases, the computational graph becomes deeper, necessitating more memory. Considering this, we opt for a specific choice of filter sizes: \(k = \{12, 32, 64, 128\}_{l=1}\) and \(k = \{64, 128\}_{l=2}\).
 
 
-### Reproducing the paper results
+### Binary MNIST with FCNs
 
 | Experiments | $600$ | $1200$ |$300^2$   | $600^2$  |  $1200^2$  | $300^3$ | $600^3$ | $1200^3$ |  $600^4$  |
 |-------------|:----------:|:----------:|:----------:|:-----------:|:-----:|:-----:|:-----:|:------:|:------:|
@@ -78,7 +78,7 @@ Although CNNs generally have fewer parameters than MLPs, deeper networks (\(l>1\
 | PAC-Bayes bound | 0.103| 0.107| 0.094|0.102|0.108|0.095|0.100|0.105|0.095|         
 | # parameters | 471601| 943201| 326101|832201|2384401|416401|1192801|3825601|1553401|         
 
-### Multiclass
+### Multiclass MNIST with FCNs
 
 | Experiments | $600$ | $1200$ |$300^2$   | $600^2$  |  $1200^2$  | $300^3$ | $600^3$ | $1200^3$ |  $600^4$  |
 |-------------|:----------:|:----------:|:----------:|:-----------:|:-----:|:-----:|:-----:|:------:|:------:|
@@ -89,7 +89,7 @@ Although CNNs generally have fewer parameters than MLPs, deeper networks (\(l>1\
 | PAC-Bayes bound | 0.130| 0.132| 0.123|0.134|0.133|0.129|0.131|0.146|0.131|      
 | # parameters | 477010| 954010| 328810 |837610|2395210|419110|1198210|3836410|1558810|      
 
-### Convolutional Neural Networks
+### Binary MNIST with CNNs
 
 The objective is to compare the Pac Bayes Bounds across shallow and deeper CNN architectures with matching parameters, alongside an almost matching-parameter MLP counterpart. Specifically, we aim to assess the performance trade-offs between model complexity and generalization capacity for CNNs within the binary and multiclass setting.
 
@@ -103,7 +103,7 @@ The objective is to compare the Pac Bayes Bounds across shallow and deeper CNN a
 | PB          | 0.118 | 0.127 | 0.114 | 0.122 | 0.103 | 0.140 |
 | Params      | 117397| 317537| 652737| 1378433| 99841 | 346369|
 
-### Convolutional Neural Networks (Multiclass)
+### Multiclass MNIST with CNNs
 
 | Experiments        | $12$    | $32$    | $64$    | $128$   | $64^2$  | $128^2$ |
 |---------|-------|-------|-------|-------|-------|-------|
