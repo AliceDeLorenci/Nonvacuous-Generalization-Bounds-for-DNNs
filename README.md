@@ -62,9 +62,9 @@ The initial SGD training was carried out over ${20}$ epochs, using a batch size 
 
 The mean ${w}$ of the posterior ${Q}$ is initialized using the neural network trained by SGD, while the diagonal ${s}$ of the covariance matrix ${\text{diag}(s)}$ is initialized to ${|w|}$ and ${\lambda}$ is initialized as ${e^{-6}}$. The prior mean is fixed to a randomly sampled ${w_0}$.
 
-For training Convolutional Neural Networks (CNNs), we employed zero padding, and \(3 \times 3\) convolutional filters, $k$. Moreover, we integrated two linear layers with $384$ neurons serving as intermediate fully connected neurons. The decision regarding the number of convolutional layers, $l$, and the number of filters, $k$, was guided by our intention to match the number of parameters with those of Multi-Layer Perceptrons (MLPs).
+For training Convolutional Neural Networks (CNNs), we employed zero padding, and $3 \times 3$ convolutional filters, $k$. Moreover, we integrated two linear layers with $384$ neurons serving as intermediate fully connected neurons. The decision regarding the number of convolutional layers, $l$, and the number of filters, $k$, was guided by our intention to match the number of parameters with those of Multi-Layer Perceptrons (MLPs).
 
-Although CNNs generally have fewer parameters than MLPs, deeper networks (\(l>1\) in this case) require more computational resources due to the increased number of operations per layer. This is because during training, the network must store intermediate values and gradients for backpropagation. In essence, as the number of layers increases, the computational graph becomes deeper, necessitating more memory. Considering this, we opt for a specific choice of filter sizes: \(k = \{12, 32, 64, 128\}_{l=1}\) and \(k = \{64, 128\}_{l=2}\).
+Although CNNs generally have fewer parameters than MLPs, deeper networks $(l>1)$ in this case) require more computational resources due to the increased number of operations per layer. This is because during training, the network must store intermediate values and gradients for backpropagation. In essence, as the number of layers increases, the computational graph becomes deeper, necessitating more memory. Considering this, we opt for a specific choice of filter sizes: \(k = \{12, 32, 64, 128\}_{l=1}\) and \(k = \{64, 128\}_{l=2}\).
 
 
 ### Binary MNIST with FCNs
