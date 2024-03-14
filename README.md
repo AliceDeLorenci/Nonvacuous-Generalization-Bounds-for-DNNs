@@ -100,8 +100,8 @@ The objective is to compare the Pac Bayes Bounds across shallow and deeper CNN a
 | Test error  | 0.033 | 0.033 | 0.024 | 0.028 | 0.016 | 0.012 |
 | SNN train error | 0.040 | 0.055 | 0.033 | 0.029 | 0.024 | 0.038 |
 | SNN test error  | 0.042 | 0.054 | 0.036 | 0.031 | 0.026 | 0.038 |
-| PB          | 0.118 | 0.127 | 0.114 | 0.122 | 0.103 | 0.140 |
-| Params      | 117397| 317537| 652737| 1378433| 99841 | 346369|
+| PAC-Bayes bound | 0.118 | 0.127 | 0.114 | 0.122 | 0.103 | 0.140 |
+| # parameters | 117397| 317537| 652737| 1378433| 99841 | 346369|
 
 ### Multiclass MNIST with CNNs
 
@@ -111,5 +111,5 @@ The objective is to compare the Pac Bayes Bounds across shallow and deeper CNN a
 | Test error  | 0.023 | 0.020 | 0.016 |0.018 | 0.023 | 0.020 | 
 | SNN train error | 0.038 | 0.031 | 0.025 | 0.022 | 0.034 | 0.023 |
 | SNN test error  | 0.035 | 0.029 | 0.025 |  0.022 |0.032 | 0.023 |
-| PB          | 0.115 | 0.114 | 0.106 | 0.107 | 0.124 | 0.119 |
-| Params      | 120862| 321002| 656202|1381898| 103306 | 349834| 
+| PAC-Bayes bound | 0.115 | 0.114 | 0.106 | 0.107 | 0.124 | 0.119 |
+| # parameters | 120862| 321002| 656202|1381898| 103306 | 349834| 
